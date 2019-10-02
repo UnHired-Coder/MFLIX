@@ -3,8 +3,9 @@ package com.telitel.tiwari.mflix;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-class PagerViewAdapter extends FragmentPagerAdapter {
+class PagerViewAdapter extends FragmentStatePagerAdapter {
     public PagerViewAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -15,6 +16,7 @@ class PagerViewAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         switch (i){
             case 0:
+
                 fragment = new fragment_album();
                 break;
             case 1:

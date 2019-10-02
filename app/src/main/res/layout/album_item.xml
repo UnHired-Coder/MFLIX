@@ -12,38 +12,37 @@
         android:layout_width="196dp"
         android:layout_height="146dp"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/song_name"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/sample_avatar" />
 
     <TextView
-        android:id="@+id/song_name"
-        android:layout_width="89dp"
-        android:layout_height="19dp"
+        android:id="@+id/album_name"
+        android:layout_width="152dp"
+        android:layout_height="29dp"
         android:gravity="center"
         android:maxLines="1"
         android:singleLine="true"
         android:text="Give It to ME"
         android:textColor="@color/textColorWhite"
-        app:layout_constraintBottom_toTopOf="@+id/song_artist"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/song_count"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/playerSongArtView" />
 
     <TextView
-        android:id="@+id/song_artist"
-        android:layout_width="84dp"
-        android:layout_height="17dp"
-        android:layout_marginBottom="5dp"
+        android:id="@+id/song_count"
+        android:layout_width="43dp"
+        android:layout_height="23dp"
         android:gravity="center"
         android:maxLines="1"
         android:singleLine="true"
-        android:text="DJ Nick"
+        android:text="6"
         android:textColor="@color/textColorWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/song_name" />
+        app:layout_constraintStart_toEndOf="@+id/album_name"
+        app:layout_constraintTop_toBottomOf="@+id/playerSongArtView" />
+
+
 </android.support.constraint.ConstraintLayout>

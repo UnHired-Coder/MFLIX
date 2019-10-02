@@ -3,8 +3,9 @@ package com.telitel.tiwari.mflix;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-class PagerViewAdapterFavourites extends FragmentPagerAdapter {
+class PagerViewAdapterFavourites extends FragmentStatePagerAdapter {
     public PagerViewAdapterFavourites(FragmentManager fm) {
         super(fm);
     }

@@ -3,6 +3,7 @@ package com.telitel.tiwari.mflix;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ public class fragment_pager_adapter extends FragmentPagerAdapter {
 
 
     private List<Fragment> Fragment = new ArrayList<>();
-    private List<String> NameFraagment = new ArrayList<>();
+    private List<String> NameFragment = new ArrayList<>();
 
     public fragment_pager_adapter(FragmentManager fm) {
         super(fm);
@@ -21,7 +22,7 @@ public class fragment_pager_adapter extends FragmentPagerAdapter {
 
     public void add(Fragment fragment,String fragmentName){
         Fragment.add(fragment);
-        NameFraagment.add(fragmentName);
+        NameFragment.add(fragmentName);
 
     }
 

@@ -2,48 +2,59 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:background="@color/colorPrimary">
 
     <ImageView
         android:id="@+id/playerSongArtView"
-        android:layout_width="196dp"
-        android:layout_height="146dp"
+        android:layout_width="76dp"
+        android:layout_height="58dp"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/song_name"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/sample_avatar" />
 
     <TextView
-        android:id="@+id/song_name"
-        android:layout_width="89dp"
-        android:layout_height="19dp"
-        android:gravity="center"
+        android:id="@+id/album_name"
+        android:layout_width="286dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginLeft="22dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="2dp"
         android:maxLines="1"
         android:singleLine="true"
         android:text="Give It to ME"
         android:textColor="@color/textColorWhite"
-        app:layout_constraintBottom_toTopOf="@+id/song_artist"
+        app:layout_constraintBottom_toTopOf="@+id/song_count"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playerSongArtView" />
+        app:layout_constraintStart_toEndOf="@+id/playerSongArtView"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/song_artist"
-        android:layout_width="84dp"
-        android:layout_height="17dp"
-        android:layout_marginBottom="5dp"
+        android:id="@+id/song_count"
+        android:layout_width="43dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginLeft="22dp"
+        android:layout_marginEnd="251dp"
+        android:layout_marginRight="251dp"
         android:gravity="center"
         android:maxLines="1"
         android:singleLine="true"
-        android:text="DJ Nick"
+        android:text="6"
         android:textColor="@color/textColorWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/song_name" />
+        app:layout_constraintStart_toEndOf="@+id/playerSongArtView"
+        app:layout_constraintTop_toBottomOf="@+id/album_name" />
+
+
 </android.support.constraint.ConstraintLayout>

@@ -47,11 +47,10 @@ public class playlistPage extends Fragment {
 
 
         viewPager = v.findViewById(R.id.container_tab_fragment);
-        pagerViewAdapter = new PagerViewAdapter(getActivity().getSupportFragmentManager());
+        pagerViewAdapter = new PagerViewAdapter(getChildFragmentManager());
         viewPager.setAdapter(pagerViewAdapter);
 
-        viewPager.setCurrentItem(0);
-        albumsTab.setTextColor(getResources().getColor(R.color.navItemChecked));
+
 
         albumsTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +70,9 @@ public class playlistPage extends Fragment {
                 viewPager.setCurrentItem(2);
             }
         });
+
+        viewPager.setCurrentItem(0);
+        albumsTab.setTextColor(getResources().getColor(R.color.navItemChecked));
 
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -115,10 +117,4 @@ public class playlistPage extends Fragment {
         return v;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-    }
 }

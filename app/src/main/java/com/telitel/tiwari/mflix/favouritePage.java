@@ -44,11 +44,9 @@ public class favouritePage extends Fragment {
 
 
         viewPager = v.findViewById(R.id.container_tab_fragment_favourite);
-        pagerViewAdapterFavourite = new PagerViewAdapterFavourites(getActivity().getSupportFragmentManager());
+        pagerViewAdapterFavourite = new PagerViewAdapterFavourites(getChildFragmentManager());
         viewPager.setAdapter(pagerViewAdapterFavourite);
 
-        viewPager.setCurrentItem(0);
-        favouritesTab.setTextColor(getResources().getColor(R.color.navItemChecked));
 
         favouritesTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +61,8 @@ public class favouritePage extends Fragment {
             }
         });
 
+        viewPager.setCurrentItem(0);
+        favouritesTab.setTextColor(getResources().getColor(R.color.navItemChecked));
 
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

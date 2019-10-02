@@ -101,38 +101,7 @@ public class MainActivity extends AppCompatActivity {
             setupFm(getSupportFragmentManager(), viewPager);
 
             viewPager.setCurrentItem(0);
-            viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int i, float v, int i1) {
-
-                }
-
-                @Override
-                public void onPageSelected(int i) {
-                    switch (i) {
-                        case 0:
-                            navigationView.setSelectedItemId(R.id.nav_home);
-                            break;
-                        case 1:
-                            navigationView.setSelectedItemId(R.id.nav_playlist);
-                            break;
-                        case 2:
-                            navigationView.setSelectedItemId(R.id.nav_favourite);
-                            break;
-                        case 3:
-                            navigationView.setSelectedItemId(R.id.nav_search);
-                            break;
-                        case 4:
-                            navigationView.setSelectedItemId(R.id.nav_tools);
-                            break;
-                    }
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int i) {
-
-                }
-            });
+            viewPager.setOnPageChangeListener(mOnPageChangeListener);
 
 
 
@@ -328,6 +297,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
+
+
+
+
+    private ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int i, float v, int i1) {
+
+        }
+
+        @Override
+        public void onPageSelected(int i) {
+            switch (i) {
+                case 0:
+                    navigationView.setSelectedItemId(R.id.nav_home);
+                    break;
+                case 1:
+                    navigationView.setSelectedItemId(R.id.nav_playlist);
+                    break;
+                case 2:
+                    navigationView.setSelectedItemId(R.id.nav_favourite);
+                    break;
+                case 3:
+                    navigationView.setSelectedItemId(R.id.nav_search);
+                    break;
+                case 4:
+                    navigationView.setSelectedItemId(R.id.nav_tools);
+                    break;
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int i) {
+
+        }
+    };
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener(){
 
         @Override
