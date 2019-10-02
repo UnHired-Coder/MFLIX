@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/playerSongArtView"
-        android:layout_width="196dp"
-        android:layout_height="146dp"
+        android:layout_width="168dp"
+        android:layout_height="145dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/song_name"
         app:layout_constraintEnd_toEndOf="parent"

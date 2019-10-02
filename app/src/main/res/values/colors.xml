@@ -9,6 +9,7 @@
     <color name="textColorWhite">#FDFDFD</color>
     <color name="textColorBlack">#000000</color>
     <color name="sideMenuIconColor">#000000</color>
+    <color name="sideMenuToogleIconColor">#FC0404</color>
 
 
 

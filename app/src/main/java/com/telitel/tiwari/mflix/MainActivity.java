@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -54,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
     Cursor cursor;
     Uri uri;
 
-
+    //DATABASE VARIABLES
+    public static database_helper _songs_database_helper;
+    SQLiteDatabase songs_database;
 
 
     @Override
@@ -89,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
             menuToggle = new ActionBarDrawerToggle(this, menuDrawer, R.string.open, R.string.close);
             menuDrawer.addDrawerListener(menuToggle);
             menuToggle.syncState();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            menuToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.sideMenuToogleIconColor));
 
 
 
@@ -139,20 +145,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
                 int id=0;
                 int title=0;//= cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
                 int artist=0;// = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-                int genre=0;//= cursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
-                int album=0;//= cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-                int art=0;// = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+//                int genre=0;//= cursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
+//                int album=0;//= cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+                int albumid=0;// = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
                 int path=0;//= cursor.getColumnIndex(String.valueOf(MediaStore.Audio.Media.DATA));
                 int typeid=0;//= cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
-
 
 
 
@@ -170,19 +170,19 @@ public class MainActivity extends AppCompatActivity {
                 {
                     artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
                 }
-                if( cursor.getColumnIndex(MediaStore.Audio.Genres.NAME)!=-1)
-                {
-                    genre = cursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
-
-                }
-                if( cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)!=-1)
-                {
-                    album = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-
-                }
+//                if( cursor.getColumnIndex(MediaStore.Audio.Genres.Members.DISPLAY_NAME)!=-1)
+//                {
+//                    genre = cursor.getColumnIndex(MediaStore.Audio.Genres.Members.DISPLAY_NAME);
+//
+//                }
+//                if( cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)!=-1)
+//                {
+//                    album = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+//
+//                }
                 if( cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)!=-1)
                 {
-                    art = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+                    albumid = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 
                 }
                 if( cursor.getColumnIndex(String.valueOf(MediaStore.Audio.Media.DATA))!=-1)
@@ -202,46 +202,53 @@ public class MainActivity extends AppCompatActivity {
                 //Getting Song ID From Cursor.
                 //int id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
                 //List<String> ListElementsPath
-                long songId = 0;
+                long songId = 0L;
                 String songTitle = "";
                 String songArtist = "";
                 String songGenre = "";
                 String songAlbum = "";
-                long songArt = 0L;
+                long songAlbumID = 0L;
                 String songAlbumArtPath="";
                 String songArtPath = "";
                 String songPath = "";
                 String songType = "";
 
 
-                int songArtPathId=0;
-                int songPathId=0;
+
+
+                _songs_database_helper= new database_helper(this);
+                songs_database = _songs_database_helper.getWritableDatabase();
+
+
+                _songs_database_helper.refreshData(songs_database);
 
 
 
-
-
-
-
-
-                boolean clear=true;
-
+                Cursor cursorall = null;
+                String isFavourite="false";
 
                 do {
+
+
+
+
+
+                        songId = cursor.getLong(id);
+                        songTitle = cursor.getString(title);
+                        songArtist = cursor.getString(artist);
+                        songGenre = getSongGenre(context,songId);
+                        songAlbumID = cursor.getLong(albumid);
+                        songAlbum =getAlbumName(context,songAlbumID);
+                        songAlbumArtPath= getAlbumArtPath(context,songAlbumID);
+                        songArtPath = getCoverArtPath(context, songAlbumID);
+                        songPath = cursor.getString(path);
 
 
                     songType = cursor.getString(typeid);
                     if (songType.contains("mpeg") || songType.contains("song") || songType.contains("mp3")) {
 
-                        songId = cursor.getLong(id);
-                        songTitle = cursor.getString(title);
-                        songArtist = cursor.getString(artist);
-                        songGenre = cursor.getString(genre);
-                        songArt = cursor.getLong(art);
-//                        songAlbum =getAlbumName(context,songArt);
-//                        songAlbumArtPath= getAlbumArtPath(context,songArt);
-//                        songArtPath = getCoverArtPath(context, songArt);
-                        songPath = cursor.getString(path);
+
+
 
                         if(songArtist==null)
                         {
@@ -267,9 +274,30 @@ public class MainActivity extends AppCompatActivity {
                         {
                             songArtPath="No";
                         }
+                        if(songGenre==null)
+                        {
+                            songGenre="No";
+                        }
+
+                        Log.i("song--- :   ",songGenre);
 
 
-                        Log.i("song :   ",songTitle);
+
+
+                        String sql ="SELECT _is_favourite FROM  _songs_tb WHERE _song_id="+(songId);
+                        cursorall= songs_database.rawQuery(sql,null);
+                        if(cursorall!=null)
+                        {
+                            if(cursorall.moveToFirst())
+                            {
+                              isFavourite=cursorall.getString(cursorall.getColumnIndex("_is_favourite"));
+                            }
+                        }
+
+                        _songs_database_helper.insertDataSongs(songId, songTitle, songArtist, songGenre,songAlbumID, songAlbum, songAlbumArtPath,songArtPath, songPath,songs_database,isFavourite);
+
+
+
 
 
                     }
@@ -278,6 +306,95 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        return menuToggle.onOptionsItemSelected(item);
+    }
+
+
+ private String getSongGenre(Context context,long song_id){
+
+     MediaMetadataRetriever mr = new MediaMetadataRetriever();
+
+     Uri trackUri = ContentUris.withAppendedId(
+             android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,song_id);
+
+     mr.setDataSource(context, trackUri);
+
+     String songGenre = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+
+
+     return songGenre;
+ }
+
+
+    private String getAlbumArtPath(Context context, long androidAlbumId) {
+        String path = null;
+        Cursor c = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{Long.toString(androidAlbumId)},
+                null);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                path = c.getString(0);
+            }
+            c.close();
+        }
+        return path;
+    }
+
+    //GET COVER ART/THUMBNAIL
+
+    private static String getCoverArtPath(Context context, long androidAlbumId) {
+        String path = null;
+        Cursor c = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{Long.toString(androidAlbumId)},
+                null);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                path = c.getString(c.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                Log.i("artPath",path);
+            }
+            c.close();
+        }
+        return path;
+    }
+
+
+
+    //GET ALBUM NAME IT BELONGS TO IF ANY
+
+    private static String getAlbumName(Context context, long androidAlbumId) {
+        String path = null;
+        Cursor c = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{Long.toString(androidAlbumId)},
+                null);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                path = c.getString(0);
+            }
+            c.close();
+        }
+        return path;
+    }
+
+
+
+
+
+
+
 
 
 

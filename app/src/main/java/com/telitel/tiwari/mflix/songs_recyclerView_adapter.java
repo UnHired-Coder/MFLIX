@@ -1,6 +1,7 @@
 package com.telitel.tiwari.mflix;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,6 +36,7 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
         View v;
 
         if(typeSong==0)
+
         v= LayoutInflater.from(mContext).inflate(R.layout.song_item,viewGroup,false);
         else if(typeSong==1)
         v= LayoutInflater.from(mContext).inflate(R.layout.song_item_large,viewGroup,false);
@@ -53,21 +55,54 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
     public void onBindViewHolder(@NonNull mySongsViewHolder mySongsViewHolder, int i) {
 
 
+
+
+
         if(this.typeSong==0){
-            mySongsViewHolder.tv_Name.setText("Dont It to ME");
-            mySongsViewHolder.tv_Artist.setText("Dj Nick");
-            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            if(mData.get(i).getSongTitle()!=null)
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
+            else mySongsViewHolder.tv_Name.setText("Not Found");
+
+            if(mData.get(i).getSongArtist()!=null)
+                mySongsViewHolder.tv_Artist.setText(mData.get(i).getSongArtist());
+            else mySongsViewHolder.tv_Artist.setText("Not Found");
+
+            if(mData.get(i).getSongArtPath().equals("No"))
+                mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            else
+                mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongArtPath()));
+
 
         }else if(this.typeSong==1) {
 
-            mySongsViewHolder.tv_Name.setText("Give It to ME");
-            mySongsViewHolder.tv_Artist.setText("Dj Nick");
-            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            if(mData.get(i).getSongTitle()!=null)
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
+            else mySongsViewHolder.tv_Name.setText("Not Found");
+
+            if(mData.get(i).getSongArtist()!=null)
+                mySongsViewHolder.tv_Artist.setText(mData.get(i).getSongArtist());
+            else mySongsViewHolder.tv_Artist.setText("Not Found");
+
+            if(mData.get(i).getSongArtPath().equals("No"))
+                mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            else
+                mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongArtPath()));
+
         }
         else {
-            mySongsViewHolder.tv_Name.setText("Give It to ME");
-            mySongsViewHolder.tv_Artist.setText("Dj Nick");
-            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            if(mData.get(i).getSongTitle()!=null)
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
+            else mySongsViewHolder.tv_Name.setText("Not Found");
+
+            if(mData.get(i).getSongArtist()!=null)
+                mySongsViewHolder.tv_Artist.setText(mData.get(i).getSongArtist());
+            else mySongsViewHolder.tv_Artist.setText("Not Found");
+
+            if(mData.get(i).getSongArtPath().equals("No"))
+                mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            else
+                mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongArtPath()));
+
         }
 
     }
