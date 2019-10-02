@@ -36,13 +36,13 @@
 
         <TextView
             android:id="@+id/song_name"
-            android:layout_width="267dp"
-            android:layout_height="31dp"
+            android:layout_width="204dp"
+            android:layout_height="32dp"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginEnd="81dp"
+            android:layout_marginRight="81dp"
             android:layout_marginBottom="4dp"
             android:maxLines="1"
             android:singleLine="true"
@@ -55,17 +55,20 @@
 
         <TextView
             android:id="@+id/song_artist"
-            android:layout_width="241dp"
-            android:layout_height="23dp"
+            android:layout_width="190dp"
+            android:layout_height="26dp"
             android:layout_marginStart="18dp"
             android:layout_marginLeft="18dp"
             android:layout_marginTop="3dp"
+            android:layout_marginEnd="90dp"
+            android:layout_marginRight="90dp"
             android:layout_marginBottom="18dp"
             android:maxLines="1"
             android:singleLine="true"
             android:text="DJ Nick"
             android:textColor="@color/textColorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/playerSongArtView"
             app:layout_constraintTop_toBottomOf="@+id/song_name" />
 
