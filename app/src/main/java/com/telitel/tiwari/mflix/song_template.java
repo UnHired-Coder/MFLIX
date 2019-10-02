@@ -10,7 +10,7 @@ public class song_template implements Parcelable {
     private Long songId;
     private String songTitle;
     private String songArtist;
-    private String songGener;
+    private String songGenre;
     private String isFavourite;
     private Long songAlbumId;
     private String songAlbum;
@@ -22,13 +22,12 @@ public class song_template implements Parcelable {
 
     }
 
-    public song_template(  Long song_id,String song_title,String song_artist,String song_genere,String is_favourite,Long song_album_id, String song_album,String song_album_art_path,String song_art_path
-            ,String song_path){
+    public song_template(  Long song_id,  String song_title,    String song_artist,   String song_genre,   String is_favourite,Long song_album_id,   String song_album,  String song_album_art_path,   String song_art_path , String song_path){
 
         songId=song_id;
         songTitle=song_title;
         songArtist=song_artist;
-        songGener=song_genere;
+        songGenre=song_genre;
         isFavourite=is_favourite;
         songAlbumId=song_album_id;
         songAlbumArtPath=song_album_art_path;
@@ -56,7 +55,7 @@ public class song_template implements Parcelable {
 
         songArtist = in.readString();
 
-        songGener= in.readString();
+        songGenre= in.readString();
 
         isFavourite= in.readString();
 
@@ -103,6 +102,14 @@ public class song_template implements Parcelable {
         return songArtist;
     }
 
+    public String getSongGener() {
+        return songGenre;
+    }
+
+    public String getIsFavourite() {
+        return isFavourite;
+    }
+
     public Long getSongAlbumId() {
         return songAlbumId;
     }
@@ -136,6 +143,14 @@ public class song_template implements Parcelable {
 
     public void setSongArtist(String songArtist) {
         this.songArtist = songArtist;
+    }
+
+    public void setSongGener(String songGener) {
+        this.songGenre = songGener;
+    }
+
+    public void setIsFavourite(String isFavourite) {
+        this.isFavourite = isFavourite;
     }
 
     public void setSongAlbumId(Long songAlbumId) {
@@ -177,6 +192,11 @@ public class song_template implements Parcelable {
         }
         dest.writeString(songTitle);
         dest.writeString(songArtist);
+
+        dest.writeString(songGenre);
+        dest.writeString(isFavourite);
+
+
         if (songAlbumId == null) {
             dest.writeByte((byte) 0);
         } else {

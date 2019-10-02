@@ -9,17 +9,102 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <android.support.constraint.ConstraintLayout
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="680dp">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/songs_recyclerView"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></android.support.v7.widget.RecyclerView>
-    </android.support.constraint.ConstraintLayout>
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary">
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/top_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="6dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3"></android.support.v7.widget.RecyclerView>
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recent_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="3dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4"></android.support.v7.widget.RecyclerView>
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/songs_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="800dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView"></android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="176dp"
+                android:layout_marginLeft="176dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="176dp"
+                android:layout_marginRight="176dp"
+                android:layout_marginBottom="4dp"
+                android:text="All Songs"
+                android:textColor="#FAF2F2"
+                app:layout_constraintBottom_toTopOf="@+id/songs_recyclerView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recent_recyclerView" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="176dp"
+                android:layout_marginLeft="176dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="176dp"
+                android:layout_marginRight="176dp"
+                android:layout_marginBottom="6dp"
+                android:text="Top Picks"
+                android:textColor="#FAF2F2"
+                app:layout_constraintBottom_toTopOf="@+id/top_recyclerView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="156dp"
+                android:layout_marginLeft="156dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="156dp"
+                android:layout_marginRight="156dp"
+                android:layout_marginBottom="6dp"
+                android:text="Recently Added"
+                android:textColor="#FAF2F2"
+                app:layout_constraintBottom_toTopOf="@+id/recent_recyclerView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/top_recyclerView" />
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 </FrameLayout>
