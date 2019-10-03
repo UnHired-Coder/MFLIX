@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary">
 
-
-<android.support.v4.widget.DrawerLayout
-    android:layout_width="match_parent"
-    android:id="@+id/side_nav_drawer"
-    android:layout_margin="0dp"
-    android:layout_marginLeft="0dp"
-    android:layout_marginTop="0dp"
-    android:layout_marginRight="0dp"
-    android:layout_marginBottom="0dp"
-    android:layout_height="match_parent">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar"
@@ -42,7 +28,7 @@
         android:id="@+id/page_container"
         android:layout_width="match_parent"
         android:layout_height="455dp"
-        android:layout_above="@+id/bottomNavigationView"
+        android:layout_above="@+id/coordinater"
         android:layout_below="@+id/imageView"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="0dp">
@@ -52,7 +38,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinater"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="100dp"
         android:layout_above="@id/bottomNavigationView"
         android:layout_alignEnd="@+id/bottomNavigationView"
         android:layout_alignRight="@+id/bottomNavigationView"
@@ -61,28 +47,26 @@
 
 
         <RelativeLayout
-            android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/bottom_sheet_behavior">
+            android:layout_height="match_parent">
 
 
             <android.support.v4.widget.NestedScrollView
+                android:id="@+id/bottom_sheet"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#F7F4F4">
+                android:layout_height="317dp"
+                android:background="#F8F7F7"
+                app:behavior_peekHeight="50dp"
+                app:layout_behavior="@string/bottom_sheet_behavior">
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="400dp"
                     android:text="kjfdvvncvnckvnkcvkcnv|n\n\n\n\nhgjhdbvbvkjdfvdf" />
 
             </android.support.v4.widget.NestedScrollView>
 
         </RelativeLayout>
-
-
-
 
 
     </android.support.design.widget.CoordinatorLayout>
@@ -98,8 +82,6 @@
         app:itemTextColor="@color/textColorWhite"
         app:menu="@menu/bottom_nav"></android.support.design.widget.BottomNavigationView>
 
-
-    </RelativeLayout>
     <android.support.design.widget.NavigationView
         android:id="@+id/sideNavView"
         android:layout_width="wrap_content"
@@ -109,5 +91,5 @@
         app:itemIconTint="@color/sideMenuIconColor"
         app:itemTextColor="@color/textColorBlack"
         app:menu="@menu/side_nav_menu"></android.support.design.widget.NavigationView>
-</android.support.v4.widget.DrawerLayout>
+
 </RelativeLayout>

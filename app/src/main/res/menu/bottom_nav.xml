@@ -7,15 +7,15 @@
         android:icon="@drawable/home_logo"
         />
 
-    <item android:id="@+id/nav_playlist"
-        android:title="Home"
+    <item
+        android:id="@+id/nav_playlist"
         android:icon="@drawable/playlist_logo"
-        />
+        android:title="Catagory" />
 
-    <item android:id="@+id/nav_favourite"
-        android:title="Home"
+    <item
+        android:id="@+id/nav_favourite"
         android:icon="@drawable/favourite_logo"
-        />
+        android:title="Created" />
 
     <item android:id="@+id/nav_search"
         android:title="Home"

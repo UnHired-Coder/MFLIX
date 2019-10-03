@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -50,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView navigationView;
 
 
+    //Bottom Player
+     private BottomSheetBehavior mBottomSheetBehavior;
+
+
     //FOR LOADING SONG
     Context context;
     ContentResolver contentResolver;
@@ -72,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         //ToolBar Setup
         Toolbar toolbar =findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
 
         //Check and request for permission
         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
@@ -101,6 +108,14 @@ public class MainActivity extends AppCompatActivity {
 
             navigationView = findViewById(R.id.bottomNavigationView);
             navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
+
+            View bottomSheet = findViewById(R.id.bottom_sheet);;
+            mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+            mBottomSheetBehavior.setHideable(false);
+            mBottomSheetBehavior.setPeekHeight(150);
+
 
 
             viewPager = findViewById(R.id.page_container);
