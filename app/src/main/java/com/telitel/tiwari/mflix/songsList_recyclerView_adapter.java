@@ -1,6 +1,7 @@
 package com.telitel.tiwari.mflix;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -47,12 +48,42 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
 
     @Override
     public void onBindViewHolder(@NonNull mySongsViewHolder mySongsViewHolder, int i) {
+        if(type==0) {
+            if (mData.get(i).getSongAlbum().equals("No"))
+                mySongsViewHolder.tv_Name.setText("No Album");
+            else
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongAlbum());
+
+            mySongsViewHolder.tv_Count.setText(mData.get(i).getSongCount());
+
+            if (mData.get(i).getSongAlbumArtPath().equals("No"))
+                mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            else {
+                mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongAlbumArtPath()));
+            }
+        }
+        else if(type==1){
+            if (mData.get(i).getSongArtist().equals("No"))
+                mySongsViewHolder.tv_Name.setText("No Artist");
+            else
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongArtist());
+
+             mySongsViewHolder.tv_Count.setText(mData.get(i).getSongCount());
+             mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_artist);
 
 
-            mySongsViewHolder.tv_Name.setText("Dont It to ME");
-            mySongsViewHolder.tv_Count.setText("Dj Nick");
-            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+        }
+        else if(type==2){
+            if (mData.get(i).getSongArtist().equals("No"))
+                mySongsViewHolder.tv_Name.setText("No Artist");
+            else
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongGener());
 
+            mySongsViewHolder.tv_Count.setText(mData.get(i).getSongCount());
+            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_genre);
+
+
+        }
 
     }
 

@@ -34,6 +34,10 @@ public class homePage extends Fragment {
 
 
     private List<song_template> songsList;
+    private List<song_template> topPicsList;
+    private List<song_template> recentList;
+
+    private int SONGS_COUNT;
 
     public homePage() {
         // Required empty public constructor
@@ -48,12 +52,12 @@ public class homePage extends Fragment {
 
 
         myTopRecyclerView = (RecyclerView) v.findViewById(R.id.top_recyclerView);
-        songs_recyclerView_adapter topSongAdapter = new songs_recyclerView_adapter(getContext(), songsList, 0);
+        songs_recyclerView_adapter topSongAdapter = new songs_recyclerView_adapter(getContext(), topPicsList, 0);
         myTopRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         myTopRecyclerView.setAdapter(topSongAdapter);
 
         myRecentRecyclerView = (RecyclerView) v.findViewById(R.id.recent_recyclerView);
-        songs_recyclerView_adapter recentSongAdapter = new songs_recyclerView_adapter(getContext(), songsList, 0);
+        songs_recyclerView_adapter recentSongAdapter = new songs_recyclerView_adapter(getContext(), recentList, 0);
         myRecentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         myRecentRecyclerView.setAdapter(recentSongAdapter);
 
@@ -76,8 +80,9 @@ public class homePage extends Fragment {
         songs_database = _songs_database_helper.getWritableDatabase();
 
 
+        topPicsList = new ArrayList<>();
+        recentList = new ArrayList<>();
         songsList = new ArrayList<>();
-
 
         Cursor songs_cursor = songs_database.rawQuery("SELECT * FROM _songs_tb ", new String[]{});
         if (songs_cursor != null) {
@@ -89,11 +94,34 @@ public class homePage extends Fragment {
 
                 //  Log.i("song Name", songs_cursor.getString(0) + "----" + songs_cursor.getString(1));
 
-                song_template song = new song_template(songs_cursor.getLong(songs_cursor.getColumnIndex("_song_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_title")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_artist")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_genre")), songs_cursor.getString(songs_cursor.getColumnIndex("_is_favourite")), songs_cursor.getLong(songs_cursor.getColumnIndex("_song_album_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_path")));
+                song_template song = new song_template(songs_cursor.getLong(songs_cursor.getColumnIndex("_song_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_title")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_artist")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_genre")), songs_cursor.getString(songs_cursor.getColumnIndex("_is_favourite")), songs_cursor.getLong(songs_cursor.getColumnIndex("_song_album_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_path")),"0");
 
                 songsList.add(song);
 
             } while (songs_cursor.moveToNext());
+
+
+         SONGS_COUNT=songsList.size();
+
+         if(SONGS_COUNT>10){
+             for(int i=1;i<=10;i++)
+             {
+                 recentList.add(songsList.get(SONGS_COUNT-i));
+                 topPicsList.add(songsList.get(i));
+
+             }
+         }else{
+             for(int i=1;i<=SONGS_COUNT;i++)
+             {
+                 recentList.add(songsList.get(SONGS_COUNT-i));
+
+             }
+
+         }
+
+
+
+
 
 
 //        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","");

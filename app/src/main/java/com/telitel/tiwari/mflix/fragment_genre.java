@@ -1,5 +1,7 @@
 package com.telitel.tiwari.mflix;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +19,15 @@ public class fragment_genre extends Fragment {
 
 
     private RecyclerView myGenreRecyclerView;
-    private List<song_template> songsList;
+    private List<song_template> genreList;
+
+
+
+    static database_helper _songs_database_helper;
+    static SQLiteDatabase songs_database;
+
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -27,7 +37,7 @@ public class fragment_genre extends Fragment {
 
 
         myGenreRecyclerView = (RecyclerView) v.findViewById(R.id.genre_recyclerView);
-        songsList_recyclerView_adapter albumAdapter = new songsList_recyclerView_adapter(getContext(), songsList,1);
+        songsList_recyclerView_adapter albumAdapter = new songsList_recyclerView_adapter(getContext(), genreList,2);
         myGenreRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         myGenreRecyclerView.setAdapter(albumAdapter);
 
@@ -38,35 +48,64 @@ public class fragment_genre extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        songsList = new ArrayList<>();
-
-        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","");
+        genreList = new ArrayList<>();
 
 
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
+
+        _songs_database_helper= new database_helper(getContext());
+        songs_database = _songs_database_helper.getWritableDatabase();
+
+
+
+        Cursor songs_cursor =songs_database.rawQuery("SELECT _song_genre,count(_song_genre) FROM _songs_tb GROUP BY _song_genre ",new String[]{}) ;
+        if(songs_cursor != null){
+            songs_cursor.moveToFirst();
+
+            do {
+
+                // Log.i("song Name",cursor.getString(0)+"--- "+cursor.getString(1)+"---- "+cursor.getString(2)+" ---"+cursor.getString(3)+" ---"+cursor.getString(4)+"--- "+cursor.getString(5)+"--- "+cursor.getString(6)+" ---"+cursor.getString(7)+" ---"+cursor.getString(8));
+
+                // Log.i("song Name",songs_cursor.getString(0)+"----"+songs_cursor.getString(1));
+
+                song_template song = new song_template(0L,"","",songs_cursor.getString(songs_cursor.getColumnIndex("_song_genre"))," ",0L," "," "," ","",songs_cursor.getString(1));
+
+                genreList.add(song);
+
+            }while (songs_cursor.moveToNext());
+
+
+        }
+
+
+
+
+//        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","","");
+//
+//
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
 
 
     }

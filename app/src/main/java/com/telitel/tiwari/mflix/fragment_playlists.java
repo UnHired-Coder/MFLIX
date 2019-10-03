@@ -41,7 +41,7 @@ public class fragment_playlists extends Fragment {
 
         songsList = new ArrayList<>();
 
-        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","");
+        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","","");
 
 
         songsList.add(song);

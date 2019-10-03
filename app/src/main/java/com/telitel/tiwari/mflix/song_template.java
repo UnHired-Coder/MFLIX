@@ -17,12 +17,13 @@ public class song_template implements Parcelable {
     private String songAlbumArtPath;
     private String  songArtPath;
     private String songPath;
+    private String songCount;
 
     public song_template(){
 
     }
 
-    public song_template(  Long song_id,  String song_title,    String song_artist,   String song_genre,   String is_favourite,Long song_album_id,   String song_album,  String song_album_art_path,   String song_art_path , String song_path){
+    public song_template(  Long song_id,  String song_title,    String song_artist,   String song_genre,   String is_favourite,Long song_album_id,   String song_album,  String song_album_art_path,   String song_art_path , String song_path, String count){
 
         songId=song_id;
         songTitle=song_title;
@@ -34,6 +35,7 @@ public class song_template implements Parcelable {
         songAlbum=song_album;
         songArtPath=song_art_path;
         songPath=song_path;
+        songCount=count;
 
 
     }
@@ -72,6 +74,8 @@ public class song_template implements Parcelable {
         songArtPath = in.readString();
 
         songPath = in.readString();
+
+        songCount = in.readString();
     }
 
 
@@ -130,6 +134,10 @@ public class song_template implements Parcelable {
         return songPath;
     }
 
+    public String getSongCount() {
+        return songCount;
+    }
+
     // SETTER
 
 
@@ -174,8 +182,9 @@ public class song_template implements Parcelable {
         this.songPath = songPath;
     }
 
-
-
+    public void setSongCount(String songCount) {
+        this.songCount = songCount;
+    }
 
     @Override
     public int describeContents() {
@@ -207,6 +216,7 @@ public class song_template implements Parcelable {
         dest.writeString(songAlbumArtPath);
         dest.writeString(songArtPath);
         dest.writeString(songPath);
+        dest.writeString(songCount);
     }
 
 }

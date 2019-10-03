@@ -361,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         if (c != null) {
             if (c.moveToFirst()) {
                 path = c.getString(c.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-                Log.i("artPath",path);
+              //  Log.i("artPath",path);
             }
             c.close();
         }
