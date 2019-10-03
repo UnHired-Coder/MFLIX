@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                             songGenre="No";
                         }
 
-                        Log.i("song--- :   ",songGenre);
+                        Log.i("song--- :   ",songTitle);
 
 
 

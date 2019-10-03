@@ -67,17 +67,13 @@
             app:layout_behavior="@string/bottom_sheet_behavior">
 
 
-            <android.support.v4.widget.NestedScrollView
+            <include
+                android:id="@+id/player_view_layout"
+                layout="@layout/activity_player_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#F7F4F4">
+                 />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="kjfdvvncvnckvnkcvkcnv|n\n\n\n\nhgjhdbvbvkjdfvdf" />
-
-            </android.support.v4.widget.NestedScrollView>
 
         </RelativeLayout>
 
