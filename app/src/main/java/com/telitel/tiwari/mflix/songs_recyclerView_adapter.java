@@ -43,7 +43,7 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
         else if(typeSong==2)
         v= LayoutInflater.from(mContext).inflate(R.layout.favourite_song_item,viewGroup,false);
         else
-        v= LayoutInflater.from(mContext).inflate(R.layout.song_item,viewGroup,false);
+        v= LayoutInflater.from(mContext).inflate(R.layout.song_item_large,viewGroup,false);
 
 
         mySongsViewHolder vHolder = new mySongsViewHolder(v);
@@ -89,6 +89,23 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
                 mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongArtPath()));
 
         }
+        else if(this.typeSong==3) {
+
+            mySongsViewHolder.itemView.setAlpha(0.2f);
+            if(mData.get(i).getSongTitle()!=null)
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
+            else mySongsViewHolder.tv_Name.setText("Not Found");
+
+            if(mData.get(i).getSongArtist()!=null)
+                mySongsViewHolder.tv_Artist.setText(mData.get(i).getSongArtist());
+            else mySongsViewHolder.tv_Artist.setText("Not Found");
+
+            if(mData.get(i).getSongArtPath().equals("No"))
+                mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
+            else
+                mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongArtPath()));
+
+        }
         else {
             if(mData.get(i).getSongTitle()!=null)
                 mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
@@ -105,6 +122,22 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
 
         }
 
+    }
+
+
+
+
+    @Override
+    public void onViewRecycled(@NonNull mySongsViewHolder holder) {
+
+        holder.itemView.setAlpha(1f);
+
+    }
+
+
+
+    public List<song_template> getmData() {
+        return mData;
     }
 
     @Override

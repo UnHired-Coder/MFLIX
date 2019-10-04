@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
@@ -31,12 +33,21 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
+
+import com.yarolegovich.discretescrollview.DiscreteScrollView;
+import com.yarolegovich.discretescrollview.transform.Pivot;
+import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     BottomNavigationView navigationView;
+
+    private DiscreteScrollView mySongsRecyclerView;
+
+
+    private List<song_template> songsList;
+
+
 
 
     //Bottom Player
@@ -320,7 +338,85 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
+
+        songsList = new ArrayList<>();
+
+        mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
+        songs_recyclerView_adapter songAdapter = new songs_recyclerView_adapter(this, songsList, 3);
+        mySongsRecyclerView.setAdapter(songAdapter);
+
+        mySongsRecyclerView.setItemTransformer(new ScaleTransformer.Builder()
+                .setMaxScale(1.05f)
+                .setMinScale(0.8f)
+                .setPivotX(Pivot.X.CENTER) // CENTER is a default one
+                .setPivotY(Pivot.Y.BOTTOM) // CENTER is a default one
+                .build());
+
+
+
+
+
+        song_template song = new song_template(0L,"",""," "," ",0L," "," ","No","","");
+
+
+        Log.i("Inside----------","this");
+
+
+
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+        songsList.add(song);
+
+
+//        mySongsRecyclerView.getViewHolder(mySongsRecyclerView.getCurrentItem()).itemView.setAlpha(1f);
+
+//        onItemChanged(songsList.get(0));
+
+
     }
+
+
+
+
+//
+//    private void onItemChanged(song_template item) {
+//
+//
+//
+//    }
+
+
+
+//    @Override
+//    public void onCurrentItemChanged(@Nullable DiscreteScrollView.ViewHolder viewHolder, int position) {
+//        int positionInDataSet = infiniteAdapter.getRealPosition(position);
+//
+//
+//
+//        onItemChanged());
+//    }
 
 
 
@@ -565,4 +661,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
+
+
 }

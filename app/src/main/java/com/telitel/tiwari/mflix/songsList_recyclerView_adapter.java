@@ -84,6 +84,13 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
 
 
         }
+        else if(type==3){
+
+                mySongsViewHolder.tv_Name.setText("No Artist");
+            mySongsViewHolder.tv_Count.setText("3");
+            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_genre);
+
+        }
 
     }
 

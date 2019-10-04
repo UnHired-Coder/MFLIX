@@ -10,7 +10,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout2"
-        android:layout_width="416dp"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="15dp"
         android:background="@color/colorPrimary"
@@ -72,13 +72,12 @@
 
 
         <com.yarolegovich.discretescrollview.DiscreteScrollView
-            android:id="@+id/songs_recyclerView"
+            android:id="@+id/songs_recyclerView_2"
             android:layout_width="match_parent"
             android:layout_height="245dp"
             android:layout_marginTop="136dp"
             android:background="#060A0E"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.666"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></com.yarolegovich.discretescrollview.DiscreteScrollView>
 
