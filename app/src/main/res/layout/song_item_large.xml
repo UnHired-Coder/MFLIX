@@ -8,7 +8,7 @@
     android:background="@color/colorPrimary">
 
     <ImageView
-        android:id="@+id/playerSongArtView"
+        android:id="@+id/song_artView"
         android:layout_width="168dp"
         android:layout_height="145dp"
         android:scaleType="fitXY"
@@ -30,7 +30,7 @@
         app:layout_constraintBottom_toTopOf="@+id/song_artist"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playerSongArtView" />
+        app:layout_constraintTop_toBottomOf="@+id/song_artView" />
 
     <TextView
         android:id="@+id/song_artist"

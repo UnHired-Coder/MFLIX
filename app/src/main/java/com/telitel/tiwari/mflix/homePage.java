@@ -1,14 +1,17 @@
 package com.telitel.tiwari.mflix;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +68,26 @@ public class homePage extends Fragment {
         songs_recyclerView_adapter songAdapter = new songs_recyclerView_adapter(getContext(), songsList, 1);
         mySongsRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         mySongsRecyclerView.setAdapter(songAdapter);
+
+       topSongAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
+           @Override
+           public void onItemClick(int position) {
+               Log.i("clicked",Integer.toString(position));
+           }
+       });
+        recentSongAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Log.i("clicked",Integer.toString(position));
+            }
+        });
+        songAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Log.i("clicked",Integer.toString(position));
+            }
+        });
+
 
 
         return v;

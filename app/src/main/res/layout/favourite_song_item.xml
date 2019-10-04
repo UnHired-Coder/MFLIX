@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/playerSongArtView"
+            android:id="@+id/song_artView"
             android:layout_width="81dp"
             android:layout_height="64dp"
             android:layout_marginStart="16dp"
@@ -50,7 +50,7 @@
             android:textColor="@color/textColorWhite"
             app:layout_constraintBottom_toTopOf="@+id/song_artist"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/playerSongArtView"
+            app:layout_constraintStart_toEndOf="@+id/song_artView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -69,7 +69,7 @@
             android:textColor="@color/textColorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/playerSongArtView"
+            app:layout_constraintStart_toEndOf="@+id/song_artView"
             app:layout_constraintTop_toBottomOf="@+id/song_name" />
 
 

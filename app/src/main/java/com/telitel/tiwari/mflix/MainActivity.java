@@ -1,10 +1,7 @@
 package com.telitel.tiwari.mflix;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -14,18 +11,17 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -33,13 +29,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.yarolegovich.discretescrollview.DiscreteScrollView;
@@ -58,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle menuToggle;
 
 
+
+
     ViewPager viewPager;
     BottomNavigationView navigationView;
 
@@ -67,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private List<song_template> songsList;
 
 
+    View player_View_layout;
 
 
     //Bottom Player
@@ -255,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
                 _songs_database_helper.refreshData(songs_database);
 
-
+                songsList = new ArrayList<>();
 
                 Cursor cursorall = null;
                 String isFavourite="false";
@@ -326,10 +323,10 @@ public class MainActivity extends AppCompatActivity {
                               isFavourite=cursorall.getString(cursorall.getColumnIndex("_is_favourite"));
                             }
                         }
-
+                        song_template song = new song_template(songId, songTitle, songArtist, songGenre,"false",songAlbumID, songAlbum, songAlbumArtPath,songArtPath, songPath,isFavourite);
                         _songs_database_helper.insertDataSongs(songId, songTitle, songArtist, songGenre,songAlbumID, songAlbum, songAlbumArtPath,songArtPath, songPath,songs_database,isFavourite);
 
-
+                        songsList.add(song);
 
 
 
@@ -340,7 +337,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        songsList = new ArrayList<>();
+
+
+
 
         mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
         songs_recyclerView_adapter songAdapter = new songs_recyclerView_adapter(this, songsList, 3);
@@ -357,42 +356,105 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+        player_View_layout = findViewById(R.id.player_view_layout);
+        player_View_layout.setVisibility(View.VISIBLE);
+
+
+
+
         song_template song = new song_template(0L,"",""," "," ",0L," "," ","No","","");
-
-
-        Log.i("Inside----------","this");
-
-
-
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
+//
+//
+//        Log.i("Inside----------","this");
+//
+//
+//
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
 
 
 //        mySongsRecyclerView.getViewHolder(mySongsRecyclerView.getCurrentItem()).itemView.setAlpha(1f);
 
 //        onItemChanged(songsList.get(0));
+
+
+
+
+
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int i) {
+
+                switch (i){
+
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f);
+                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f);
+
+                        navigationView.setVisibility(View.VISIBLE);
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+
+                    case BottomSheetBehavior.STATE_EXPANDED:
+
+                        player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(0.1f);
+                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(0.1f);
+                        player_View_layout.findViewById(R.id.collapsed_player_view).setClickable(false);
+                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setClickable(false);
+                        player_View_layout.getRootView().setBackgroundColor(Color.BLACK);
+                        navigationView.setVisibility(View.GONE);
+
+                        break;
+
+                    case BottomSheetBehavior.STATE_HIDDEN:
+
+                        break;
+
+                    case BottomSheetBehavior.STATE_SETTLING:
+
+                        break;
+
+
+                }
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {
+
+                player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f-v);
+                player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f-v);
+
+            }
+        });
+
+
+
 
 
     }
@@ -424,6 +486,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         return menuToggle.onOptionsItemSelected(item);
     }
+
+
 
 
  private String getSongGenre(Context context,long song_id){
@@ -606,8 +670,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if(menuDrawer.isDrawerOpen(GravityCompat.START))
-             menuDrawer.closeDrawer(GravityCompat.START);
+        if(mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED)
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         else
             super.onBackPressed();
 

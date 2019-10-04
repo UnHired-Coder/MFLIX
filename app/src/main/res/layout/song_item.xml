@@ -7,43 +7,57 @@
     android:layout_margin="10dp"
     android:background="@color/colorPrimary">
 
-    <ImageView
-        android:id="@+id/playerSongArtView"
-        android:layout_width="86dp"
-        android:layout_height="79dp"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/song_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sample_avatar" />
+    <android.support.v7.widget.CardView
+        android:id="@+id/song_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/song_name"
-        android:layout_width="86dp"
-        android:layout_height="17dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:text="Give It to ME"
-        android:textColor="@color/textColorWhite"
-        app:layout_constraintBottom_toTopOf="@+id/song_artist"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playerSongArtView" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary">
 
-    <TextView
-        android:id="@+id/song_artist"
-        android:layout_width="84dp"
-        android:layout_height="17dp"
-        android:layout_marginBottom="5dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:text="DJ Nick"
-        android:textColor="@color/textColorWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/song_name" />
+            <ImageView
+                android:id="@+id/song_artView"
+                android:layout_width="86dp"
+                android:layout_height="79dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toTopOf="@+id/song_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/sample_avatar" />
+
+            <TextView
+                android:id="@+id/song_name"
+                android:layout_width="86dp"
+                android:layout_height="17dp"
+                android:gravity="center"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="Give It to ME"
+                android:textColor="@color/textColorWhite"
+                app:layout_constraintBottom_toTopOf="@+id/song_artist"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/song_artView" />
+
+            <TextView
+                android:id="@+id/song_artist"
+                android:layout_width="84dp"
+                android:layout_height="17dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="DJ Nick"
+                android:textColor="@color/textColorWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/song_name" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
 </android.support.constraint.ConstraintLayout>

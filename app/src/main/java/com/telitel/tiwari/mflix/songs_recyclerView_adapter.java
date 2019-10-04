@@ -18,7 +18,18 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
     Context mContext;
     List<song_template> mData;
     int typeSong;
+    private OnItemClickListener mClickListener;
 
+    public interface OnItemClickListener{
+        void  onItemClick(int position);
+    }
+
+
+    public void setOnItemClickListener(OnItemClickListener clickListener){
+
+        mClickListener = clickListener;
+
+    }
     public songs_recyclerView_adapter(Context mContext,List<song_template> mData,int type){
 
         this.mContext=mContext;
@@ -43,10 +54,9 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
         else if(typeSong==2)
         v= LayoutInflater.from(mContext).inflate(R.layout.favourite_song_item,viewGroup,false);
         else
-        v= LayoutInflater.from(mContext).inflate(R.layout.song_item_large,viewGroup,false);
+        v= LayoutInflater.from(mContext).inflate(R.layout.plyer_song_art_view,viewGroup,false);
 
-
-        mySongsViewHolder vHolder = new mySongsViewHolder(v);
+        mySongsViewHolder vHolder = new mySongsViewHolder(v,mClickListener);
 
         return vHolder;
     }
@@ -91,15 +101,7 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
         }
         else if(this.typeSong==3) {
 
-            mySongsViewHolder.itemView.setAlpha(0.2f);
-            if(mData.get(i).getSongTitle()!=null)
-                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
-            else mySongsViewHolder.tv_Name.setText("Not Found");
-
-            if(mData.get(i).getSongArtist()!=null)
-                mySongsViewHolder.tv_Artist.setText(mData.get(i).getSongArtist());
-            else mySongsViewHolder.tv_Artist.setText("Not Found");
-
+            mySongsViewHolder.itemView.setAlpha(1f);
             if(mData.get(i).getSongArtPath().equals("No"))
                 mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
             else
@@ -121,6 +123,23 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
                 mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongArtPath()));
 
         }
+
+
+
+
+
+
+//        mySongsViewHolder.iv_AlbumArt.setAlpha(selectedItem == null || hero.equals(selectedItem) ? 1f : 0.5f);
+//        mySongsViewHolder.iv_AlbumArt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                selectedItem = hero.equals(selectedItem) ? null : hero;
+//            ...
+//                notifyDataSetChanged();
+//            }
+//        });
+
+
 
     }
 
@@ -156,16 +175,26 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
 
 
 
-        public mySongsViewHolder(View itemView){
+        public mySongsViewHolder(View itemView, final OnItemClickListener clickListener){
 
             super(itemView);
 
             tv_Name=(TextView) itemView.findViewById(R.id.song_name);
             tv_Artist=(TextView)itemView.findViewById(R.id.song_artist);
-            iv_AlbumArt=(ImageView)itemView.findViewById(R.id.playerSongArtView);
+            iv_AlbumArt=(ImageView)itemView.findViewById(R.id.song_artView);
 
+           itemView.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   if(clickListener!=null){
+                       int position = getAdapterPosition();
+                       if(position!= RecyclerView.NO_POSITION){
+                           clickListener.onItemClick(position);
+                       }
 
-
+                   }
+               }
+           });
 //
 //            if(typeSong==2)
 //                itemView.findViewById(R.id.favourite_View).setOnClickListener(new View.OnClickListener() {

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,6 +45,22 @@ public class fragment_artist extends Fragment {
         myArtistRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         myArtistRecyclerView.setAdapter(albumAdapter);
 
+        albumAdapter.setmOnClickListener(new songsList_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Log.i("clicked",Integer.toString(position));
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment_songs_list listSongsFragment=new fragment_songs_list();
+                Bundle args = new Bundle();
+                args.putString("list_filter",artistList.get(position).getSongArtist());
+                args.putString("type","artist");
+                listSongsFragment.setArguments(args);
+                fragmentTransaction.add(R.id.playlists_container,listSongsFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
 
 
 

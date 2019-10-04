@@ -1,11 +1,14 @@
 package com.telitel.tiwari.mflix;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,6 +31,11 @@ public class fragment_album extends Fragment {
     static SQLiteDatabase songs_database;
 
 
+
+
+
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,9 +49,41 @@ public class fragment_album extends Fragment {
 
 
 
+
+
+
+
+
+
+
+        albumAdapter.setmOnClickListener(new songsList_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Log.i("clicked album",Integer.toString(position));
+
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment_songs_list listSongsFragment=new fragment_songs_list();
+                Bundle args = new Bundle();
+                args.putString("list_filter",albumList.get(position).getSongAlbum());
+                args.putString("type","album");
+                listSongsFragment.setArguments(args);
+                fragmentTransaction.add(R.id.playlists_container,listSongsFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+
+            }
+        });
+
+
+
        return v;
 
     }
+
+
+
 
 
     @Override
@@ -51,10 +91,6 @@ public class fragment_album extends Fragment {
         super.onCreate(savedInstanceState);
 
         albumList = new ArrayList<>();
-
-
-
-
 
 
 
@@ -83,6 +119,8 @@ public class fragment_album extends Fragment {
 
         }
 
+
+
 //        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","");
 //
 //        Log.i("this---","--------");
@@ -106,4 +144,6 @@ public class fragment_album extends Fragment {
 
 
     }
+
+
 }

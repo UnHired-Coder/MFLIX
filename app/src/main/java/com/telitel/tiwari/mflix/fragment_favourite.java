@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,12 @@ public class fragment_favourite extends Fragment {
         myFavouriteRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         myFavouriteRecyclerView.setAdapter(songAdapter);
 
-
+        songAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Log.i("clicked",Integer.toString(position));
+            }
+        });
 
         return v;
     }

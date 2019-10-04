@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +44,26 @@ public class fragment_genre extends Fragment {
         myGenreRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         myGenreRecyclerView.setAdapter(albumAdapter);
 
- return v;
+        albumAdapter.setmOnClickListener(new songsList_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Log.i("clicked",Integer.toString(position));
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment_songs_list listSongsFragment=new fragment_songs_list();
+                Bundle args = new Bundle();
+                args.putString("list_filter",genreList.get(position).getSongGener());
+                args.putString("type","genre");
+                listSongsFragment.setArguments(args);
+                fragmentTransaction.add(R.id.playlists_container,listSongsFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+
+            }
+        });
+
+
+        return v;
     }
 
     @Override

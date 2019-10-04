@@ -8,7 +8,7 @@
 
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraintLayout2"
+        android:id="@+id/collapsed_player_view"
         android:layout_width="416dp"
         android:layout_height="34dp"
         android:layout_marginTop="15dp"
@@ -69,17 +69,16 @@
         android:layout_height="678dp"
         android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        app:layout_constraintTop_toBottomOf="@+id/collapsed_player_view"
         tools:layout_editor_absoluteX="2dp" >
 
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="245dp"
-            android:layout_marginTop="136dp"
-            android:background="#060A0E"
+            android:layout_height="525dp"
+            android:layout_marginTop="40dp"
+            android:background="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.666"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></android.support.v7.widget.RecyclerView>
 

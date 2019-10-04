@@ -4,6 +4,8 @@ package com.telitel.tiwari.mflix;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,7 @@ import android.widget.TextView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class playlistPage extends Fragment {
+public class playlistPage extends Fragment  {
 
 
     ViewPager viewPager;
@@ -27,10 +29,10 @@ public class playlistPage extends Fragment {
 
 
 
-
     public playlistPage() {
         // Required empty public constructor
     }
+
 
 
     @Override
@@ -52,6 +54,10 @@ public class playlistPage extends Fragment {
 
 
 
+
+
+
+
         albumsTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,6 +68,8 @@ public class playlistPage extends Fragment {
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(1);
+
+
             }
         });
         genreTab.setOnClickListener(new View.OnClickListener() {
@@ -116,5 +124,6 @@ public class playlistPage extends Fragment {
 
         return v;
     }
+
 
 }

@@ -8,7 +8,7 @@
     android:background="@color/colorPrimary">
 
     <ImageView
-        android:id="@+id/playerSongArtView"
+        android:id="@+id/song_artView"
         android:layout_width="76dp"
         android:layout_height="58dp"
         android:scaleType="fitXY"
@@ -35,7 +35,7 @@
         android:textColor="@color/textColorWhite"
         app:layout_constraintBottom_toTopOf="@+id/song_count"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/playerSongArtView"
+        app:layout_constraintStart_toEndOf="@+id/song_artView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -53,7 +53,7 @@
         android:textColor="@color/textColorWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/playerSongArtView"
+        app:layout_constraintStart_toEndOf="@+id/song_artView"
         app:layout_constraintTop_toBottomOf="@+id/album_name" />
 
 

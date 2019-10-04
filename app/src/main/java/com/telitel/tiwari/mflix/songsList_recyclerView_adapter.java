@@ -18,6 +18,17 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
     List<song_template> mData;
    public int type;
 
+   private OnItemClickListener mOnClickListener;
+
+    public interface  OnItemClickListener{
+        void onItemClick(int position);
+    }
+
+
+    public void setmOnClickListener(OnItemClickListener ClickListener){
+        mOnClickListener=ClickListener;
+    }
+
     public songsList_recyclerView_adapter(Context mContext, List<song_template> mData, int type){
 
         this.mContext=mContext;
@@ -41,7 +52,7 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
         else
             v= LayoutInflater.from(mContext).inflate(R.layout.artist_item,viewGroup,false);
 
-        mySongsViewHolder vHolder = new mySongsViewHolder(v);
+        mySongsViewHolder vHolder = new mySongsViewHolder(v,mOnClickListener);
 
         return vHolder;
     }
@@ -84,13 +95,7 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
 
 
         }
-        else if(type==3){
 
-                mySongsViewHolder.tv_Name.setText("No Artist");
-            mySongsViewHolder.tv_Count.setText("3");
-            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_genre);
-
-        }
 
     }
 
@@ -98,6 +103,8 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
     public int getItemCount() {
        return mData.size();
     }
+
+
 
 
 
@@ -109,18 +116,24 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
 
 
 
-        public mySongsViewHolder(View itemView){
+        public mySongsViewHolder(View itemView, final OnItemClickListener Clicklistener){
 
             super(itemView);
 
              tv_Name=(TextView) itemView.findViewById(R.id.album_name);
              tv_Count=(TextView)itemView.findViewById(R.id.song_count);
-             iv_AlbumArt=(ImageView)itemView.findViewById(R.id.playerSongArtView);
+             iv_AlbumArt=(ImageView)itemView.findViewById(R.id.song_artView);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(Clicklistener !=null){
+                        int position = getAdapterPosition();
+                        if(position!= RecyclerView.NO_POSITION){
+                            Clicklistener.onItemClick(position);
+                        }
+                    }
                 }
             });
 

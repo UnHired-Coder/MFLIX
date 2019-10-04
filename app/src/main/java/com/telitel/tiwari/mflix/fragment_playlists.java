@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,13 @@ public class fragment_playlists extends Fragment {
         songsList_recyclerView_adapter songAdapter = new songsList_recyclerView_adapter(getContext(), songsList,3);
         myPlaylistsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         myPlaylistsRecyclerView.setAdapter(songAdapter);
+
+        songAdapter.setmOnClickListener(new songsList_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Log.i("clicked",Integer.toString(position));
+            }
+        });
 
 
         return v;
