@@ -1,6 +1,7 @@
 package com.telitel.tiwari.mflix;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -16,6 +17,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetBehavior;
@@ -29,21 +31,26 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yarolegovich.discretescrollview.DiscreteScrollView;
+import com.yarolegovich.discretescrollview.InfiniteScrollAdapter;
 import com.yarolegovich.discretescrollview.transform.Pivot;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements DiscreteScrollView.OnItemChangedListener,
+        View.OnClickListener {
 
 
     private int STORAGE_PERMISSION_CODE = 1;
@@ -57,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     BottomNavigationView navigationView;
 
-    private DiscreteScrollView mySongsRecyclerView;
+    public static DiscreteScrollView mySongsRecyclerView;
+    public static InfiniteScrollAdapter infiniteAdapter;
+    public static songs_recyclerView_adapter songAdapter;
 
+   public static   List<song_template> songsList;
 
-    private List<song_template> songsList;
-
-
-    View player_View_layout;
+    public static View player_View_layout;
 
 
     //Bottom Player
@@ -71,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //FOR LOADING SONG
-    Context context;
+   public static   Context context;
     ContentResolver contentResolver;
     Cursor cursor;
     Uri uri;
@@ -339,11 +346,17 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+//Discrete Player Recycler View
+
+
 
 
         mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
-        songs_recyclerView_adapter songAdapter = new songs_recyclerView_adapter(this, songsList, 3);
+        mySongsRecyclerView.addOnItemChangedListener(this);
+        setPlayerSongsRecyclerView(songsList,0);
+        infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
         mySongsRecyclerView.setAdapter(songAdapter);
+
 
         mySongsRecyclerView.setItemTransformer(new ScaleTransformer.Builder()
                 .setMaxScale(1.05f)
@@ -360,7 +373,6 @@ public class MainActivity extends AppCompatActivity {
 
         player_View_layout = findViewById(R.id.player_view_layout);
         player_View_layout.setVisibility(View.VISIBLE);
-
 
 
 
@@ -413,20 +425,25 @@ public class MainActivity extends AppCompatActivity {
 
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f);
+                        player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
                         player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f);
 
                         navigationView.setVisibility(View.VISIBLE);
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
+
                         break;
 
                     case BottomSheetBehavior.STATE_EXPANDED:
 
-                        player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(0.1f);
-                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(0.1f);
+                        player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(0f);
+                        player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.GONE);
+
+                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(0f);
                         player_View_layout.findViewById(R.id.collapsed_player_view).setClickable(false);
                         player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setClickable(false);
                         player_View_layout.getRootView().setBackgroundColor(Color.BLACK);
+
                         navigationView.setVisibility(View.GONE);
 
                         break;
@@ -444,15 +461,24 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+
+
             @Override
             public void onSlide(@NonNull View view, float v) {
 
+                if(v>0.4f)
+                player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
                 player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f-v);
                 player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f-v);
-
+                ObjectAnimator animation = ObjectAnimator.ofFloat(navigationView, "translationY", v*80f);
+                animation.setDuration(400);
+                animation.start();
             }
-        });
 
+
+
+
+        });
 
 
 
@@ -470,15 +496,50 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 
+//Player view item  click listeners
 
-//    @Override
-//    public void onCurrentItemChanged(@Nullable DiscreteScrollView.ViewHolder viewHolder, int position) {
-//        int positionInDataSet = infiniteAdapter.getRealPosition(position);
-//
-//
-//
-//        onItemChanged());
-//    }
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onCurrentItemChanged(@Nullable RecyclerView.ViewHolder viewHolder, int adapterPosition) {
+
+        int positionInDataSet = infiniteAdapter.getRealPosition(adapterPosition);
+        Log.i("position",Integer.toString(adapterPosition));
+        songChanged(adapterPosition);
+
+    }
+
+
+
+    public void songChanged(int position){
+
+
+        ImageView iv= player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_art_player_collapsed);
+        TextView tv= player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_title_player_collapsed);
+
+
+        iv.setImageURI(Uri.parse(songsList.get(position).getSongAlbumArtPath()));
+        tv.setText(songsList.get(position).getSongTitle());
+    }
+
+
+
+
+    public static void setPlayerSongsRecyclerView( List<song_template> songsList2,int position){
+
+        songAdapter = new songs_recyclerView_adapter(context , songsList2, 3);
+        infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
+        mySongsRecyclerView.setAdapter(songAdapter);
+        mySongsRecyclerView.scrollToPosition(position);
+        songsList=songsList2;
+
+    }
+
+
+
 
 
 
@@ -486,6 +547,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         return menuToggle.onOptionsItemSelected(item);
     }
+
+
 
 
 
@@ -725,7 +788,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 
 
 

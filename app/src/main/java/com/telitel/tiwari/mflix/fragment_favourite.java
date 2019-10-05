@@ -44,6 +44,8 @@ public class fragment_favourite extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Log.i("clicked",Integer.toString(position));
+                MainActivity.setPlayerSongsRecyclerView(songsList,position);
+
             }
         });
 

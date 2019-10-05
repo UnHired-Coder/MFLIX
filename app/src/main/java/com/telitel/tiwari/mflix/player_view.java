@@ -20,14 +20,14 @@ import com.yarolegovich.discretescrollview.DiscreteScrollView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class player_view extends BottomSheetDialogFragment {
+public class player_view extends BottomSheetDialogFragment{
 
 
     private DiscreteScrollView mySongsRecyclerView;
 
 
     private List<song_template> songsList;
-
+   private   songs_recyclerView_adapter songAdapter;
 
 
 
@@ -38,7 +38,7 @@ public class player_view extends BottomSheetDialogFragment {
 
 
         mySongsRecyclerView = v.findViewById(R.id.songs_recyclerView_2);
-        songs_recyclerView_adapter songAdapter = new songs_recyclerView_adapter(getContext(), songsList, 3);
+        songAdapter = new songs_recyclerView_adapter(getContext(), songsList, 3);
         mySongsRecyclerView.setAdapter(songAdapter);
 
         songsList = new ArrayList<>();
@@ -48,6 +48,8 @@ public class player_view extends BottomSheetDialogFragment {
 
 
        Log.i("Inside----------","this");
+
+
 
 
 
@@ -83,6 +85,7 @@ public class player_view extends BottomSheetDialogFragment {
 
         return v;
     }
+
 
 
     //    private DiscreteScrollView mySongsRecyclerView;

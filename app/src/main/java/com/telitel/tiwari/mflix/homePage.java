@@ -73,18 +73,22 @@ public class homePage extends Fragment {
            @Override
            public void onItemClick(int position) {
                Log.i("clicked",Integer.toString(position));
+               MainActivity.setPlayerSongsRecyclerView(topPicsList,position);
+
            }
        });
         recentSongAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 Log.i("clicked",Integer.toString(position));
+                MainActivity.setPlayerSongsRecyclerView(recentList,position);
             }
         });
         songAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 Log.i("clicked",Integer.toString(position));
+                MainActivity.setPlayerSongsRecyclerView(songsList,position);
             }
         });
 

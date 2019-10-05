@@ -101,7 +101,11 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
         }
         else if(this.typeSong==3) {
 
+
             mySongsViewHolder.itemView.setAlpha(1f);
+            if(mData.get(i).getSongTitle()!=null)
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
+            else mySongsViewHolder.tv_Name.setText("Not Found");
             if(mData.get(i).getSongArtPath().equals("No"))
                 mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
             else
@@ -172,6 +176,10 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
         private TextView tv_Artist;
         private ImageView iv_AlbumArt;
 
+        private TextView cp_tv_Name;
+        private ImageView cp_iv_AlbumArt;
+
+
 
 
 
@@ -182,6 +190,8 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
             tv_Name=(TextView) itemView.findViewById(R.id.song_name);
             tv_Artist=(TextView)itemView.findViewById(R.id.song_artist);
             iv_AlbumArt=(ImageView)itemView.findViewById(R.id.song_artView);
+
+
 
            itemView.setOnClickListener(new View.OnClickListener() {
                @Override
