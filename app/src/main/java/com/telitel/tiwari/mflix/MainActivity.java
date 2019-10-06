@@ -3,11 +3,13 @@ package com.telitel.tiwari.mflix;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -15,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -86,6 +89,38 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     //DATABASE VARIABLES
     public static database_helper _songs_database_helper;
     SQLiteDatabase songs_database;
+
+
+
+
+
+
+    private MediaPlayerService player;
+    boolean serviceBound = false;
+
+
+
+    public static final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -177,7 +212,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
                 Toast.makeText(context, "No Music Found on SD Card.", Toast.LENGTH_LONG);
 
-            }else{
+            }else if(cursor.getCount()>0){
 
 
 
@@ -239,16 +274,16 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 //Getting Song ID From Cursor.
                 //int id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
                 //List<String> ListElementsPath
-                long songId = 0L;
-                String songTitle = "";
-                String songArtist = "";
-                String songGenre = "";
-                String songAlbum = "";
-                long songAlbumID = 0L;
-                String songAlbumArtPath="";
-                String songArtPath = "";
-                String songPath = "";
-                String songType = "";
+                long songId ;
+                String songTitle ;
+                String songArtist ;
+                String songGenre ;
+                String songAlbum ;
+                long songAlbumID ;
+                String songAlbumArtPath;
+                String songArtPath ;
+                String songPath ;
+                String songType ;
 
 
 
@@ -498,6 +533,32 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
 //Player view item  click listeners
 
+
+    public  void playAudio(int audioIndex) {
+        //Check is service is active
+        if (!serviceBound) {
+            //Store Serializable audioList to SharedPreferences
+            StorageUtil storage = new StorageUtil(getApplicationContext());
+            storage.storeAudio(songsList);
+            storage.storeAudioIndex(audioIndex);
+
+            Intent playerIntent = new Intent(this, MediaPlayerService.class);
+            startService(playerIntent);
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            //Store the new audioIndex to SharedPreferences
+            StorageUtil storage = new StorageUtil(getApplicationContext());
+            storage.storeAudioIndex(audioIndex);
+
+            //Service is active
+            //Send a broadcast to the service -> PLAY_NEW_AUDIO
+            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+            sendBroadcast(broadcastIntent);
+        }
+    }
+
+
+
     @Override
     public void onClick(View v) {
 
@@ -510,11 +571,14 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         Log.i("position",Integer.toString(adapterPosition));
         songChanged(adapterPosition);
 
+
+        playAudio(adapterPosition);
+
     }
 
 
 
-    public void songChanged(int position){
+    public static void songChanged(int position){
 
 
         ImageView iv= player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_art_player_collapsed);
@@ -523,6 +587,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
         iv.setImageURI(Uri.parse(songsList.get(position).getSongAlbumArtPath()));
         tv.setText(songsList.get(position).getSongTitle());
+        mySongsRecyclerView.scrollToPosition(position);
+
     }
 
 
@@ -534,10 +600,10 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
         mySongsRecyclerView.setAdapter(songAdapter);
         mySongsRecyclerView.scrollToPosition(position);
-        songsList=songsList2;
+        MainActivity.songsList=songsList2;
+          
 
     }
-
 
 
 
@@ -788,6 +854,111 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         }
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Binding this Client to the AudioPlayer Service
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
+            player = binder.getService();
+            serviceBound = true;
+
+            Toast.makeText(MainActivity.this, "Service Bound", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            serviceBound = false;
+        }
+    };
+
+
+
+
+
+
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean("ServiceState", serviceBound);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        serviceBound = savedInstanceState.getBoolean("ServiceState");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (serviceBound) {
+            unbindService(serviceConnection);
+            //service is active
+            player.stopSelf();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

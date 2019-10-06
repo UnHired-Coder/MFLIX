@@ -75,6 +75,7 @@ public class homePage extends Fragment {
                Log.i("clicked",Integer.toString(position));
                MainActivity.setPlayerSongsRecyclerView(topPicsList,position);
 
+
            }
        });
         recentSongAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
@@ -186,4 +187,5 @@ public class homePage extends Fragment {
 
         }
     }
+
 }

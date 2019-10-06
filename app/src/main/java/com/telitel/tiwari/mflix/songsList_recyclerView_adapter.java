@@ -73,6 +73,7 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
                 mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongAlbumArtPath()));
             }
         }
+
         else if(type==1){
             if (mData.get(i).getSongArtist().equals("No"))
                 mySongsViewHolder.tv_Name.setText("No Artist");
@@ -92,7 +93,6 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
 
             mySongsViewHolder.tv_Count.setText(mData.get(i).getSongCount());
             mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_genre);
-
 
         }
 
