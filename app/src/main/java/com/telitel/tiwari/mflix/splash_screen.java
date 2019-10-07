@@ -39,8 +39,6 @@ public class splash_screen extends AppCompatActivity {
         animate(splash);
 
 
-
-
     }
 
 

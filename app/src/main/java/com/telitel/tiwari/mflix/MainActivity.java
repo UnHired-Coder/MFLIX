@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
@@ -51,10 +52,12 @@ import com.yarolegovich.discretescrollview.transform.Pivot;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity  implements DiscreteScrollView.OnItemChangedListener,
-        View.OnClickListener {
+        View.OnClickListener  {
 
 
     private int STORAGE_PERMISSION_CODE = 1;
@@ -97,11 +100,14 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
 
     private MediaPlayerService player;
-    boolean serviceBound = false;
+    boolean serviceBound = true;
+
 
 
 
     public static final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
+    public static final String Broadcast_PAUSE_AUDIO = " com.telitel.tiwari.mflix.PauseAudio";
+
 
 
     public static int p1;
@@ -115,18 +121,18 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     ImageView playPreviousButton_expanded;
     ImageView createPlaylistButton_expanded;
     ImageView favouriteThisButton_expanded;
-
     ImageView shuffleSongsButton_expanded;
     ImageView repeatSongsButton_expanded;
-
     TextView startTimeView_expanded;
     TextView endTimeView_expanded;
-
     SeekBar  songSeekBar;
 
+    //songSeekBar handler
+    private Handler myHandler = new Handler();
 
-
-
+    boolean isPlaying =false;
+    private double startTime = 0;
+    private double finalTime = 0;
 
 
 
@@ -145,23 +151,19 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //ToolBar Setup
-        Toolbar toolbar =findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-
         //Check and request for permission
-        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Permition Granted Already", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             requestStoragePermition();
         }
 
         //Proceed to this only if the permission is granted
-        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) {
-
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
 
             //SIDE NAVIGATION DRAWER
@@ -173,18 +175,15 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             menuToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.sideMenuToogleIconColor));
 
 
-
-
             navigationView = findViewById(R.id.bottomNavigationView);
             navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
-
-            View bottomSheet = findViewById(R.id.bottom_sheet);;
+            View bottomSheet = findViewById(R.id.bottom_sheet);
+            ;
             mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
             mBottomSheetBehavior.setHideable(false);
             mBottomSheetBehavior.setPeekHeight(150);
-
 
 
             viewPager = findViewById(R.id.page_container);
@@ -192,10 +191,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
             viewPager.setCurrentItem(0);
             viewPager.setOnPageChangeListener(mOnPageChangeListener);
-
-
-
-
 
 
             //GET ALL SONGS
@@ -223,34 +218,28 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
                 Toast.makeText(context, "No Music Found on SD Card.", Toast.LENGTH_LONG);
 
-            }else if(cursor.getCount()>0){
+            } else if (cursor.getCount() > 0) {
 
 
-
-
-                int id=0;
-                int title=0;//= cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-                int artist=0;// = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+                int id = 0;
+                int title = 0;//= cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+                int artist = 0;// = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
 //                int genre=0;//= cursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
 //                int album=0;//= cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-                int albumid=0;// = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-                int path=0;//= cursor.getColumnIndex(String.valueOf(MediaStore.Audio.Media.DATA));
-                int typeid=0;//= cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
+                int albumid = 0;// = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+                int path = 0;//= cursor.getColumnIndex(String.valueOf(MediaStore.Audio.Media.DATA));
+                int typeid = 0;//= cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
 
-
-                if( cursor.getColumnIndex(MediaStore.Audio.Media._ID)!=-1)
-                {
+                if (cursor.getColumnIndex(MediaStore.Audio.Media._ID) != -1) {
                     id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
 
                 }
-                if( cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)!=-1)
-                {
+                if (cursor.getColumnIndex(MediaStore.Audio.Media.TITLE) != -1) {
                     title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
 
                 }
-                if( cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)!=-1)
-                {
+                if (cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST) != -1) {
                     artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
                 }
 //                if( cursor.getColumnIndex(MediaStore.Audio.Genres.Members.DISPLAY_NAME)!=-1)
@@ -263,43 +252,36 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //                    album = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
 //
 //                }
-                if( cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)!=-1)
-                {
+                if (cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID) != -1) {
                     albumid = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 
                 }
-                if( cursor.getColumnIndex(String.valueOf(MediaStore.Audio.Media.DATA))!=-1)
-                {
+                if (cursor.getColumnIndex(String.valueOf(MediaStore.Audio.Media.DATA)) != -1) {
                     path = cursor.getColumnIndex(String.valueOf(MediaStore.Audio.Media.DATA));
 
                 }
-                if( cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE)!=-1)
-                {
+                if (cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE) != -1) {
                     typeid = cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
                 }
 
 
-
-
                 //Getting Song ID From Cursor.
                 //int id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
                 //List<String> ListElementsPath
-                long songId ;
-                String songTitle ;
-                String songArtist ;
-                String songGenre ;
-                String songAlbum ;
-                long songAlbumID ;
+                long songId;
+                String songTitle;
+                String songArtist;
+                String songGenre;
+                String songAlbum;
+                long songAlbumID;
                 String songAlbumArtPath;
-                String songArtPath ;
-                String songPath ;
-                String songType ;
+                String songArtPath;
+                String songPath;
+                String songType;
 
 
-
-
-                _songs_database_helper= new database_helper(this);
+                _songs_database_helper = new database_helper(this);
                 songs_database = _songs_database_helper.getWritableDatabase();
 
 
@@ -309,76 +291,61 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 songsListFinal = new ArrayList<>();
 
                 Cursor cursorall = null;
-                String isFavourite="false";
+                String isFavourite = "false";
 
                 do {
 
 
-
-
-
-                        songId = cursor.getLong(id);
-                        songTitle = cursor.getString(title);
-                        songArtist = cursor.getString(artist);
-                        songGenre = getSongGenre(context,songId);
-                        songAlbumID = cursor.getLong(albumid);
-                        songAlbum =getAlbumName(context,songAlbumID);
-                        songAlbumArtPath= getAlbumArtPath(context,songAlbumID);
-                        songArtPath = getCoverArtPath(context, songAlbumID);
-                        songPath = cursor.getString(path);
+                    songId = cursor.getLong(id);
+                    songTitle = cursor.getString(title);
+                    songArtist = cursor.getString(artist);
+                    songGenre = getSongGenre(context, songId);
+                    songAlbumID = cursor.getLong(albumid);
+                    songAlbum = getAlbumName(context, songAlbumID);
+                    songAlbumArtPath = getAlbumArtPath(context, songAlbumID);
+                    songArtPath = getCoverArtPath(context, songAlbumID);
+                    songPath = cursor.getString(path);
 
 
                     songType = cursor.getString(typeid);
                     if (songType.contains("mpeg") || songType.contains("song") || songType.contains("mp3")) {
 
 
-
-
-                        if(songArtist==null)
-                        {
-                            songArtist="No";
+                        if (songArtist == null) {
+                            songArtist = "No";
                         }
 
-                        if(songGenre==null)
-                        {
-                            songGenre="No";
+                        if (songGenre == null) {
+                            songGenre = "No";
                         }
 
-                        if(songAlbum==null)
-                        {
-                            songArtist="No";
+                        if (songAlbum == null) {
+                            songArtist = "No";
                         }
 
-                        if(songAlbumArtPath==null)
-                        {
-                            songAlbumArtPath="No";
+                        if (songAlbumArtPath == null) {
+                            songAlbumArtPath = "No";
                         }
 
-                        if(songArtPath==null)
-                        {
-                            songArtPath="No";
+                        if (songArtPath == null) {
+                            songArtPath = "No";
                         }
-                        if(songGenre==null)
-                        {
-                            songGenre="No";
+                        if (songGenre == null) {
+                            songGenre = "No";
                         }
 
-                        Log.i("song--- :   ",songTitle);
+                        Log.i("song--- :   ", songTitle);
 
 
-
-
-                        String sql ="SELECT _is_favourite FROM  _songs_tb WHERE _song_id="+(songId);
-                        cursorall= songs_database.rawQuery(sql,null);
-                        if(cursorall!=null)
-                        {
-                            if(cursorall.moveToFirst())
-                            {
-                              isFavourite=cursorall.getString(cursorall.getColumnIndex("_is_favourite"));
+                        String sql = "SELECT _is_favourite FROM  _songs_tb WHERE _song_id=" + (songId);
+                        cursorall = songs_database.rawQuery(sql, null);
+                        if (cursorall != null) {
+                            if (cursorall.moveToFirst()) {
+                                isFavourite = cursorall.getString(cursorall.getColumnIndex("_is_favourite"));
                             }
                         }
-                        song_template song = new song_template(songId, songTitle, songArtist, songGenre,"false",songAlbumID, songAlbum, songAlbumArtPath,songArtPath, songPath,isFavourite);
-                        _songs_database_helper.insertDataSongs(songId, songTitle, songArtist, songGenre,songAlbumID, songAlbum, songAlbumArtPath,songArtPath, songPath,songs_database,isFavourite);
+                        song_template song = new song_template(songId, songTitle, songArtist, songGenre, "false", songAlbumID, songAlbum, songAlbumArtPath, songArtPath, songPath, isFavourite);
+                        _songs_database_helper.insertDataSongs(songId, songTitle, songArtist, songGenre, songAlbumID, songAlbum, songAlbumArtPath, songArtPath, songPath, songs_database, isFavourite);
 
                         songsList.add(song);
                         songsListFinal.add(song);
@@ -386,15 +353,16 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
                     }
                 } while (cursor.moveToNext());
+                cursor.close();
             }
 
-        }
+            Intent playerIntent = new Intent(this, MediaPlayerService.class);
+            startService(playerIntent);
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
 
 
-
-
-        StorageUtil storage = new StorageUtil(getApplicationContext());
+            StorageUtil storage = new StorageUtil(getApplicationContext());
         storage.storeAudio(songsList);
         storage.storeAudioIndex(0);
 
@@ -409,27 +377,40 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //        storage.storeAudioIndex(-1);
 //        else
 //            storage.storeAudioIndex(storage.loadAudioIndex());
+//
+//        Log.i("initial",Integer.toString(storage.loadAudioIndex()));
+//        Log.i("initial",storage.loadAudio().get(storage.loadAudioIndex()).getSongTitle());
 
-        Log.i("initial",Integer.toString(storage.loadAudioIndex()));
-        Log.i("initial",storage.loadAudio().get(storage.loadAudioIndex()).getSongTitle());
 
-
-      // playAudio(storage.loadAudioIndex());
-
-        Intent playerIntent = new Intent(this, MediaPlayerService.class);
-        startService(playerIntent);
-        bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        // playAudio(storage.loadAudioIndex());
 
 
 //Discrete Player Recycler View
 
 
-
-
         mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
         mySongsRecyclerView.addOnItemChangedListener(this);
-        setPlayerSongsRecyclerView(songsList,0,0);
 
+
+        mySongsRecyclerView.addScrollStateChangeListener(new DiscreteScrollView.ScrollStateChangeListener<RecyclerView.ViewHolder>() {
+            @Override
+            public void onScrollStart(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onScrollEnd(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
+
+            }
+
+            @Override
+            public void onScroll(float scrollPosition, int currentPosition, int newPosition, @Nullable RecyclerView.ViewHolder currentHolder, @Nullable RecyclerView.ViewHolder newCurrent) {
+
+            }
+        });
+
+
+        setPlayerSongsRecyclerView(songsList, 0, 0);
 
 
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
@@ -444,68 +425,18 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 .build());
 
 
-
-
-
-
-
         player_View_layout = findViewById(R.id.player_view_layout);
         player_View_layout.setVisibility(View.VISIBLE);
 
 
-
         initViewObjects();
-
-
-
-
-
-        song_template song = new song_template(0L,"",""," "," ",0L," "," ","No","","");
-//
-//
-//        Log.i("Inside----------","this");
-//
-//
-//
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-
-
-//        mySongsRecyclerView.getViewHolder(mySongsRecyclerView.getCurrentItem()).itemView.setAlpha(1f);
-
-//        onItemChanged(songsList.get(0));
-
-
-
 
 
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View view, int i) {
 
-                switch (i){
+                switch (i) {
 
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f);
@@ -546,53 +477,67 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             }
 
 
-
             @Override
             public void onSlide(@NonNull View view, float v) {
 
-                if(v>0.4f)
-                player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
-                player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f-v);
-                player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f-v);
-                ObjectAnimator animation = ObjectAnimator.ofFloat(navigationView, "translationY", v*80f);
+                if (v > 0.4f)
+                    player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
+                player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f - v);
+                player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f - v);
+                ObjectAnimator animation = ObjectAnimator.ofFloat(navigationView, "translationY", v * 80f);
                 animation.setDuration(400);
                 animation.start();
             }
 
 
-
-
         });
-
 
     }
 
-
-
-
-//
-//    private void onItemChanged(song_template item) {
-//
-//
-//
-//    }
+    }
 
 
 //Player view item  click listeners
 
 
-    public  static void playAudio(int audioIndex) {
+//    public  static void playAudio(int audioIndex) {
+//        {
+//            //Service is active
+//            //Send a broadcast to the service -> PLAY_NEW_AUDIO
+//            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+//            context.sendBroadcast(broadcastIntent);
+//            Log.i("But","here");
+//        }
+//    }
+
+
+
+
+
+    private void playAudio(int audioIndex) {
         //Check is service is active
-        {
+        if (!serviceBound) {
+            //Store Serializable audioList to SharedPreferences
+            StorageUtil storage = new StorageUtil(getApplicationContext());
+            storage.storeAudio(songsList);
+            storage.storeAudioIndex(audioIndex);
+
+            Intent playerIntent = new Intent(this, MediaPlayerService.class);
+            startService(playerIntent);
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            //Store the new audioIndex to SharedPreferences
+            StorageUtil storage = new StorageUtil(getApplicationContext());
+        //    storage.storeAudio(songsList);
+            storage.storeAudioIndex(audioIndex);
 
             //Service is active
             //Send a broadcast to the service -> PLAY_NEW_AUDIO
             Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            context.sendBroadcast(broadcastIntent);
-            Log.i("But","here");
+            sendBroadcast(broadcastIntent);
+
         }
     }
-
 
 
 
@@ -621,47 +566,135 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
            @Override
            public void onClick(View v) {
 
+
+
+            if(isPlaying){
+                Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                context.sendBroadcast(broadcastIntent);
+                myHandler.postDelayed(UpdateSongTime,100);
+                Log.i("paused","music ");
+                playPauseButton_collapsed.setImageResource(R.drawable.play_button);
+                playPauseButton_expanded.setImageResource(R.drawable.play_button);
+                isPlaying=false;
+
+            }
+            else
+            {
+                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                myHandler.postDelayed(UpdateSongTime,100);
+                context.sendBroadcast(broadcastIntent);
+                Log.i("played","music ");
+                playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                isPlaying=true;
+
+            }
+
            }
        });
 
-       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+       playPauseButton_expanded.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+               if(isPlaying){
+                   Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                   myHandler.postDelayed(UpdateSongTime,100);
+                   context.sendBroadcast(broadcastIntent);
+                   Log.i("paused","music ");
+                   playPauseButton_collapsed.setImageResource(R.drawable.play_button);
+                   playPauseButton_expanded.setImageResource(R.drawable.play_button);
+                   isPlaying=false;
+               }
+               else
+               {
+                   Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                   myHandler.postDelayed(UpdateSongTime,100);
+                   context.sendBroadcast(broadcastIntent);
+                   Log.i("played","music ");
+                   playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                   playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                   isPlaying=true;
+               }
+
+           }
+       });
+
+       playNextButton_expanded.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+               StorageUtil storage = new StorageUtil(context.getApplicationContext());
+
+               if(storage.loadAudioIndex()+1>=storage.loadAudio().size()){
+                   storage.storeAudioIndex(0);
+               }
+               else
+               {
+                   storage.storeAudioIndex(storage.loadAudioIndex()+1);
+               }
+               songChanged(storage.loadAudioIndex());
+               Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+               context.sendBroadcast(broadcastIntent);
+
+           }
+       });
+
+       playPreviousButton_expanded.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+               StorageUtil storage = new StorageUtil(context.getApplicationContext());
+               if(storage.loadAudioIndex()-1<=0){
+                   storage.storeAudioIndex(storage.loadAudio().size()-1);
+               }
+               else
+               {
+                   storage.storeAudioIndex(storage.loadAudioIndex()-1);
+               }
+               songChanged(storage.loadAudioIndex());
+               Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+               context.sendBroadcast(broadcastIntent);
+
+           }
+       });
+
+       createPlaylistButton_expanded.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
 
            }
        });
 
-       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+       favouriteThisButton_expanded.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
 
            }
        });
 
-       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+       shuffleSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
 
-           }
-       });
+               Collections.shuffle(songsList);
+               StorageUtil storage = new StorageUtil(context.getApplicationContext());
+               storage.clearCachedAudioPlaylist();
+               storage.storeAudioIndex(storage.loadAudioIndex());
+               storage.storeAudio(songsList);
+               songAdapter = new songs_recyclerView_adapter(context , songsList, 3);
+               infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
+               mySongsRecyclerView.setAdapter(songAdapter);
+             //  mySongsRecyclerView.scrollToPosition(0);
 
-       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
 
-           }
-       });
+               Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+               context.sendBroadcast(broadcastIntent);
+               myHandler.postDelayed(UpdateSongTime,100);
 
-       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-
-           }
-       });
-
-       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
+               Log.i("played","music ");
+               playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+               isPlaying=true;
 
            }
        });
@@ -673,22 +706,67 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
            }
        });
 
-       shuffleSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
+       songSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+
+
+           int seek=0;
+
            @Override
-           public void onClick(View v) {
+           public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+               seek=i;
+           }
+
+           @Override
+           public void onStartTrackingTouch(SeekBar seekBar) {
 
            }
+
+           @Override
+           public void onStopTrackingTouch(SeekBar seekBar) {
+               player.mediaPlayer.seekTo((int) seek);
+               songSeekBar.setProgress((int)seek);
+           }
+
        });
 
-
-
-
-
-
-
-
-
    }
+
+    private Runnable UpdateSongTime = new Runnable() {
+        public void run() {
+
+            startTime = player.mediaPlayer.getCurrentPosition();
+            finalTime = player.mediaPlayer.getDuration();
+
+            songSeekBar.setMax((int)finalTime);
+            songSeekBar.setProgress((int) startTime);
+
+            startTimeView_expanded.setText(String.format("%d: %ds",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                    toMinutes((long) startTime)))
+            );
+
+            endTimeView_expanded.setText(String.format("%d: %ds",
+                    TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                    toMinutes((long) finalTime)))
+            );
+
+            // time = new Random().nextInt(time%100) + 20; // [0, 60] + 20 => [20, 80]
+            // DrawableCompat.setTint(drawc, Color.argb((time+80)%80,time*5%50,time*3,time/2));
+            myHandler.postDelayed(this, 1000);
+        }
+    };
+
+
+
+
+
+
 
 
     @Override
@@ -710,6 +788,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
       //  playAudio(storage.loadAudioIndex());
 
     }
+
+
 
 
 
@@ -736,7 +816,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
         songsList=songsList2;
         p1=p2;
-        Log.i("in final position is",Integer.toString(p1));
+        Log.i("in final position ---is",Integer.toString(p1));
 
         StorageUtil storage = new StorageUtil(context.getApplicationContext());
         storage.storeAudioIndex(p1);
@@ -943,7 +1023,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         getMenuInflater().inflate(R.menu.toolbar_nav, menu);
         return true;
 
-
     }
 
     @Override
@@ -996,7 +1075,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 Intent i = new Intent(this,MainActivity.class);
                 MainActivity.this.finish();
                 startActivity(i);
-
 
                 } else {
                 MainActivity.this.finish();
@@ -1077,6 +1155,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean("ServiceState", serviceBound);
+        savedInstanceState.putBoolean("isPlaying", isPlaying);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -1084,6 +1163,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         serviceBound = savedInstanceState.getBoolean("ServiceState");
+        isPlaying = savedInstanceState.getBoolean("isPlaying");
+
     }
 
     @Override

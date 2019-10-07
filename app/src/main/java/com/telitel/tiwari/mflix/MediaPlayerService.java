@@ -42,7 +42,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
 
 
-    private MediaPlayer mediaPlayer;
+    public MediaPlayer mediaPlayer;
 
 
     //Used to pause/resume MediaPlayer
@@ -119,7 +119,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         registerBecomingNoisyReceiver();
         //Listen for new Audio to play -- BroadcastReceiver
         register_playNewAudio();
-
+        register_pauseAudio();
         notificationManager = NotificationManagerCompat.from(this);
 
     }
@@ -145,6 +145,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         //unregister BroadcastReceivers
         unregisterReceiver(becomingNoisyReceiver);
         unregisterReceiver(playNewAudio);
+        unregisterReceiver(pauseAudio);
 
         //clear cached playlist
        // new StorageUtil(getApplicationContext()).clearCachedAudioPlaylist();
@@ -186,7 +187,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         if (mediaSessionManager == null) {
             try {
                 initMediaSession();
-               initMediaPlayer();
+                initMediaPlayer();
             } catch (RemoteException e) {
                 e.printStackTrace();
                 stopSelf();
@@ -759,6 +760,38 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
 
+    private void updateMetaData() {
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap albumArt = BitmapFactory.decodeFile(activeAudio.getSongArtPath(),bmOptions);
+
+        //replace with medias albumArt
+        // Update the current metadata
+        mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, activeAudio.getSongArtist())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, activeAudio.getSongAlbum())
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, activeAudio.getSongTitle())
+                .build());
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void register_playNewAudio() {
+        //Register playNewMedia receiver
+        IntentFilter filter = new IntentFilter(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+        registerReceiver(playNewAudio, filter);
+    }
 
 
     private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
@@ -767,6 +800,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
             //Get the new media index form SharedPreferences
             audioIndex = new StorageUtil(getApplicationContext()).loadAudioIndex();
+            audioList = new StorageUtil(getApplicationContext()).loadAudio();
             if (audioIndex != -1 && audioIndex < audioList.size()) {
                 //index is in a valid range
                 activeAudio = audioList.get(audioIndex);
@@ -785,27 +819,36 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     };
 
-    private void register_playNewAudio() {
+
+    private void register_pauseAudio() {
         //Register playNewMedia receiver
-        IntentFilter filter = new IntentFilter(MainActivity.Broadcast_PLAY_NEW_AUDIO);
-        registerReceiver(playNewAudio, filter);
+        IntentFilter filter = new IntentFilter(MainActivity.Broadcast_PAUSE_AUDIO);
+        registerReceiver(pauseAudio, filter);
     }
 
 
-    private void updateMetaData() {
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap albumArt = BitmapFactory.decodeFile(activeAudio.getSongArtPath(),bmOptions);
+    private BroadcastReceiver pauseAudio = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 
-        //replace with medias albumArt
-        // Update the current metadata
-        mediaSession.setMetadata(new MediaMetadataCompat.Builder()
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, activeAudio.getSongArtist())
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, activeAudio.getSongAlbum())
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, activeAudio.getSongTitle())
-                .build());
+            //Get the new media index form SharedPreferences
+            audioIndex = new StorageUtil(getApplicationContext()).loadAudioIndex();
+            if (audioIndex != -1 && audioIndex < audioList.size()) {
+                //index is in a valid range
+                activeAudio = audioList.get(audioIndex);
+            } else {
+                stopSelf();
+            }
 
-    }
+            //A PLAY_NEW_AUDIO action received
+            //reset mediaPlayer to play the new Audio
+            stopMedia();
+            buildNotification(PlaybackStatus.PAUSED);
+
+
+        }
+    };
+
 
 
     private void initMediaPlayer() {
@@ -833,24 +876,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
         mediaPlayer.prepareAsync();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
