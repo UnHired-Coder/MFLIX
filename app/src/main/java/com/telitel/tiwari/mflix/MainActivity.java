@@ -178,6 +178,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             navigationView = findViewById(R.id.bottomNavigationView);
             navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+            player_View_layout = findViewById(R.id.player_view_layout);
+            player_View_layout.setVisibility(View.VISIBLE);
 
             View bottomSheet = findViewById(R.id.bottom_sheet);
             ;
@@ -410,7 +412,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         });
 
 
-        setPlayerSongsRecyclerView(songsList, 0, 0);
+        setPlayerSongsRecyclerView(songsList, 0);
 
 
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
@@ -425,8 +427,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 .build());
 
 
-        player_View_layout = findViewById(R.id.player_view_layout);
-        player_View_layout.setVisibility(View.VISIBLE);
+
 
 
         initViewObjects();
@@ -795,37 +796,42 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
     public static void songChanged(int position){
 
-
-        ImageView iv= player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_art_player_collapsed);
-        TextView tv= player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_title_player_collapsed);
-        iv.setImageURI(Uri.parse(songsList.get(position).getSongAlbumArtPath()));
-        tv.setText(songsList.get(position).getSongTitle());
-        mySongsRecyclerView.scrollToPosition(position);
-
         StorageUtil storage = new StorageUtil(context.getApplicationContext());
         storage.storeAudioIndex(position);
+        ImageView iv=MainActivity.player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_art_player_collapsed);
+        TextView tv= MainActivity.player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_title_player_collapsed);
+        iv.setImageURI(Uri.parse(storage.loadAudio().get(storage.loadAudioIndex()).getSongArtPath()));
+        tv.setText(storage.loadAudio().get(storage.loadAudioIndex()).getSongTitle());
+        mySongsRecyclerView.scrollToPosition(position);
+
+
       // playAudio(0);
 
     }
 
 
+    public static void setPlayerSongsRecyclerView( List<song_template> songsList2,int position){
 
 
-    public static void setPlayerSongsRecyclerView( List<song_template> songsList2,int position,int p2){
+       // songsList=songsList2;
+       // p1=p2;
+       // Log.i("in final position ---is",Integer.toString(p1));
 
+        //StorageUtil storage = new StorageUtil(context.getApplicationContext());
+       // storage.storeAudioIndex(p1);
+//        songAdapter = new songs_recyclerView_adapter(context , songsList2, 3);
+//        infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
+//        mySongsRecyclerView.setAdapter(songAdapter);
+//        mySongsRecyclerView.scrollToPosition(position);
 
-        songsList=songsList2;
-        p1=p2;
-        Log.i("in final position ---is",Integer.toString(p1));
-
-        StorageUtil storage = new StorageUtil(context.getApplicationContext());
-        storage.storeAudioIndex(p1);
         songAdapter = new songs_recyclerView_adapter(context , songsList2, 3);
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
         mySongsRecyclerView.setAdapter(songAdapter);
         mySongsRecyclerView.scrollToPosition(position);
 
-     //   playAudio(p1);
+        Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+        context.sendBroadcast(broadcastIntent);
+        songChanged(position);
 
     }
 

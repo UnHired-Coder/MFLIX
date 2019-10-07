@@ -2,6 +2,7 @@ package com.telitel.tiwari.mflix;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.telitel.tiwari.mflix.MainActivity.Broadcast_PLAY_NEW_AUDIO;
 
 
 /**
@@ -63,7 +66,19 @@ public class fragment_songs_list extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Log.i("clicked",Integer.toString(position));
-                MainActivity.setPlayerSongsRecyclerView(songsList,position,0);
+
+                StorageUtil storage = new StorageUtil(getActivity().getApplicationContext());
+                storage.clearCachedAudioPlaylist();
+                storage.storeAudio(songsList);
+                storage.storeAudioIndex(position);
+                // MainActivity.playAudio(0);
+                //Service is active
+                //Send a broadcast to the service -> PLAY_NEW_AUDIO
+                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                getActivity().sendBroadcast(broadcastIntent);
+                Log.i("But","here");
+                MainActivity.setPlayerSongsRecyclerView(songsList,position);
+
             }
         });
 

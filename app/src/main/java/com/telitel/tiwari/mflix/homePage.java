@@ -79,14 +79,14 @@ public class homePage extends Fragment {
                StorageUtil storage = new StorageUtil(getActivity().getApplicationContext());
                storage.clearCachedAudioPlaylist();
                storage.storeAudio(topPicsList);
-             //  storage.storeAudioIndex(songsList.indexOf(topPicsList.get(position)));
+               storage.storeAudioIndex(position);
               // MainActivity.playAudio(0);
                //Service is active
                //Send a broadcast to the service -> PLAY_NEW_AUDIO
                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
                getActivity().sendBroadcast(broadcastIntent);
                Log.i("But","here");
-               MainActivity.setPlayerSongsRecyclerView(topPicsList,position,songsList.indexOf(topPicsList.get(position)));
+               MainActivity.setPlayerSongsRecyclerView(topPicsList,position);
 
 
            }
@@ -98,6 +98,7 @@ public class homePage extends Fragment {
                 StorageUtil storage = new StorageUtil(getActivity().getApplicationContext());
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(recentList);
+                storage.storeAudioIndex(position);
               //  storage.storeAudioIndex(songsList.indexOf(recentList.get(position)));
                // MainActivity.playAudio(0);
 //
@@ -106,7 +107,7 @@ public class homePage extends Fragment {
 //                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
 //                getActivity().sendBroadcast(broadcastIntent);
                Log.i("But","here");
-                MainActivity.setPlayerSongsRecyclerView(recentList,position,songsList.indexOf(recentList.get(position)));
+                MainActivity.setPlayerSongsRecyclerView(recentList,position);
 
 
             }
@@ -123,6 +124,7 @@ public class homePage extends Fragment {
                 StorageUtil storage = new StorageUtil(getActivity().getApplicationContext());
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(songsList);
+                storage.storeAudioIndex(position);
               //  storage.storeAudioIndex(songsList.indexOf(songsList.get(position)));
               //  MainActivity.playAudio(0);
 
@@ -131,7 +133,7 @@ public class homePage extends Fragment {
 //                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
 //                getActivity().sendBroadcast(broadcastIntent);
                 Log.i("But","here");
-                MainActivity.setPlayerSongsRecyclerView(songsList,position,position);
+                MainActivity.setPlayerSongsRecyclerView(songsList,position);
 
             }
         });
