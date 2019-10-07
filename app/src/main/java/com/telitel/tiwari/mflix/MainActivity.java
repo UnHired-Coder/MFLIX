@@ -358,15 +358,21 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 cursor.close();
             }
 
-            Intent playerIntent = new Intent(this, MediaPlayerService.class);
-            startService(playerIntent);
-            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
 
 
             StorageUtil storage = new StorageUtil(getApplicationContext());
-        storage.storeAudio(songsList);
-        storage.storeAudioIndex(0);
+            storage.storeAudio(songsList);
+            storage.storeAudioIndex(0);
+
+            Intent playerIntent = new Intent(this, MediaPlayerService.class);
+            startService(playerIntent);
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+            Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+            context.sendBroadcast(broadcastIntent);
+
+
 
 //        if(storage.loadAudio()==null)
 //        storage.storeAudio(songsList);
@@ -403,6 +409,10 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             @Override
             public void onScrollEnd(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
 
+                StorageUtil storage = new StorageUtil(getApplicationContext());
+                storage.storeAudioIndex(adapterPosition);
+                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                context.sendBroadcast(broadcastIntent);
             }
 
             @Override
@@ -832,6 +842,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
         context.sendBroadcast(broadcastIntent);
         songChanged(position);
+
 
     }
 
