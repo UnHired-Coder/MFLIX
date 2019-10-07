@@ -85,7 +85,7 @@
             app:layout_constraintTop_toTopOf="parent"></com.yarolegovich.discretescrollview.DiscreteScrollView>
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/start_time_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="55dp"
@@ -94,13 +94,13 @@
             android:layout_marginBottom="50dp"
             android:text="0:23"
             android:textColor="@color/textColorWhite"
-            app:layout_constraintBottom_toTopOf="@+id/imageView3"
+            app:layout_constraintBottom_toTopOf="@+id/play_previous_song_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/songs_recyclerView_2"
             app:layout_constraintVertical_bias="1.0" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/end_time_tv"
             android:layout_width="wrap_content"
             android:layout_height="17dp"
             android:layout_marginTop="110dp"
@@ -109,28 +109,28 @@
             android:layout_marginBottom="52dp"
             android:text="0:23"
             android:textColor="@color/textColorWhite"
-            app:layout_constraintBottom_toTopOf="@+id/imageView4"
+            app:layout_constraintBottom_toTopOf="@+id/play_next_song_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/songs_recyclerView_2"
             app:layout_constraintVertical_bias="1.0" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/play_pause_button_expanded"
             android:layout_width="101dp"
             android:layout_height="77dp"
-            android:layout_marginStart="61dp"
-            android:layout_marginLeft="61dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginLeft="50dp"
             android:layout_marginEnd="50dp"
             android:layout_marginRight="50dp"
             android:layout_marginBottom="17dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView4"
+            app:layout_constraintEnd_toStartOf="@+id/play_next_song_button"
             app:layout_constraintHorizontal_bias="0.666"
-            app:layout_constraintStart_toEndOf="@+id/imageView3"
+            app:layout_constraintStart_toEndOf="@+id/play_previous_song_button"
             app:srcCompat="@drawable/play_button" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/play_previous_song_button"
             android:layout_width="36dp"
             android:layout_height="29dp"
             android:layout_marginStart="56dp"
@@ -141,7 +141,7 @@
             app:srcCompat="@drawable/previous_next_button" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/play_next_song_button"
             android:layout_width="36dp"
             android:layout_height="29dp"
             android:layout_marginEnd="68dp"
@@ -153,7 +153,7 @@
             app:srcCompat="@drawable/previous_next_button" />
 
         <SeekBar
-            android:id="@+id/seekBar"
+            android:id="@+id/seekBar_song"
             android:layout_width="222dp"
             android:layout_height="6dp"
             android:layout_marginStart="12dp"
@@ -162,13 +162,13 @@
             android:layout_marginEnd="19dp"
             android:layout_marginRight="19dp"
             android:layout_marginBottom="43dp"
-            app:layout_constraintBottom_toTopOf="@+id/imageView2"
-            app:layout_constraintEnd_toStartOf="@+id/textView6"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintBottom_toTopOf="@+id/play_pause_button_expanded"
+            app:layout_constraintEnd_toStartOf="@+id/end_time_tv"
+            app:layout_constraintStart_toEndOf="@+id/start_time_tv"
             app:layout_constraintTop_toBottomOf="@+id/songs_recyclerView_2" />
 
         <ImageView
-            android:id="@+id/imageView5"
+            android:id="@+id/add_to_playlist_Button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="213dp"
@@ -176,12 +176,12 @@
             android:layout_marginEnd="76dp"
             android:layout_marginRight="76dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView6"
+            app:layout_constraintStart_toEndOf="@+id/favourite_this_button"
             app:layout_constraintTop_toBottomOf="@+id/songs_recyclerView_2"
             app:srcCompat="@drawable/playlist_button" />
 
         <ImageView
-            android:id="@+id/imageView6"
+            android:id="@+id/favourite_this_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="82dp"
@@ -189,6 +189,39 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/songs_recyclerView_2"
             app:srcCompat="@drawable/like_button" />
+
+        <ImageView
+            android:id="@+id/repeat_song_button"
+            android:layout_width="18dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="27dp"
+            android:layout_marginLeft="27dp"
+            android:layout_marginTop="104dp"
+            android:layout_marginEnd="110dp"
+            android:layout_marginRight="110dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/play_pause_button_expanded"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/start_time_tv"
+            app:srcCompat="@drawable/repeat_button" />
+
+        <ImageView
+            android:id="@+id/shuffle_songs_button"
+            android:layout_width="18dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="110dp"
+            android:layout_marginLeft="110dp"
+            android:layout_marginTop="104dp"
+            android:layout_marginEnd="27dp"
+            android:layout_marginRight="27dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/play_pause_button_expanded"
+            app:layout_constraintTop_toBottomOf="@+id/end_time_tv"
+            app:srcCompat="@drawable/shuffle_button" />
 
 
     </android.support.constraint.ConstraintLayout>

@@ -18,17 +18,17 @@ import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public static songs_recyclerView_adapter songAdapter;
 
    public static   List<song_template> songsList;
-
+    public static   List<song_template> songsListFinal;
     public static View player_View_layout;
 
 
@@ -103,13 +104,25 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public static final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
 
 
+    public static int p1;
 
 
 
+    //Views
+    ImageView playPauseButton_collapsed;
+    ImageView playPauseButton_expanded;
+    ImageView playNextButton_expanded;
+    ImageView playPreviousButton_expanded;
+    ImageView createPlaylistButton_expanded;
+    ImageView favouriteThisButton_expanded;
 
+    ImageView shuffleSongsButton_expanded;
+    ImageView repeatSongsButton_expanded;
 
+    TextView startTimeView_expanded;
+    TextView endTimeView_expanded;
 
-
+    SeekBar  songSeekBar;
 
 
 
@@ -151,7 +164,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
 
 
-
             //SIDE NAVIGATION DRAWER
             menuDrawer = (DrawerLayout) findViewById(R.id.side_nav_drawer);
             menuToggle = new ActionBarDrawerToggle(this, menuDrawer, R.string.open, R.string.close);
@@ -180,7 +192,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
             viewPager.setCurrentItem(0);
             viewPager.setOnPageChangeListener(mOnPageChangeListener);
-
 
 
 
@@ -295,6 +306,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 _songs_database_helper.refreshData(songs_database);
 
                 songsList = new ArrayList<>();
+                songsListFinal = new ArrayList<>();
 
                 Cursor cursorall = null;
                 String isFavourite="false";
@@ -369,7 +381,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                         _songs_database_helper.insertDataSongs(songId, songTitle, songArtist, songGenre,songAlbumID, songAlbum, songAlbumArtPath,songArtPath, songPath,songs_database,isFavourite);
 
                         songsList.add(song);
-
+                        songsListFinal.add(song);
 
 
                     }
@@ -381,6 +393,34 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
 
 
+
+        StorageUtil storage = new StorageUtil(getApplicationContext());
+        storage.storeAudio(songsList);
+        storage.storeAudioIndex(0);
+
+//        if(storage.loadAudio()==null)
+//        storage.storeAudio(songsList);
+//        else
+//            storage.storeAudio(storage.loadAudio());
+//
+//
+//
+//        if(songsList.size()==0)
+//        storage.storeAudioIndex(-1);
+//        else
+//            storage.storeAudioIndex(storage.loadAudioIndex());
+
+        Log.i("initial",Integer.toString(storage.loadAudioIndex()));
+        Log.i("initial",storage.loadAudio().get(storage.loadAudioIndex()).getSongTitle());
+
+
+      // playAudio(storage.loadAudioIndex());
+
+        Intent playerIntent = new Intent(this, MediaPlayerService.class);
+        startService(playerIntent);
+        bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+
 //Discrete Player Recycler View
 
 
@@ -388,7 +428,10 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
         mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
         mySongsRecyclerView.addOnItemChangedListener(this);
-        setPlayerSongsRecyclerView(songsList,0);
+        setPlayerSongsRecyclerView(songsList,0,0);
+
+
+
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
         mySongsRecyclerView.setAdapter(songAdapter);
 
@@ -408,6 +451,12 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
         player_View_layout = findViewById(R.id.player_view_layout);
         player_View_layout.setVisibility(View.VISIBLE);
+
+
+
+        initViewObjects();
+
+
 
 
 
@@ -516,8 +565,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         });
 
 
-
-
     }
 
 
@@ -534,29 +581,114 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //Player view item  click listeners
 
 
-    public  void playAudio(int audioIndex) {
+    public  static void playAudio(int audioIndex) {
         //Check is service is active
-        if (!serviceBound) {
-            //Store Serializable audioList to SharedPreferences
-            StorageUtil storage = new StorageUtil(getApplicationContext());
-            storage.storeAudio(songsList);
-            storage.storeAudioIndex(audioIndex);
-
-            Intent playerIntent = new Intent(this, MediaPlayerService.class);
-            startService(playerIntent);
-            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            //Store the new audioIndex to SharedPreferences
-            StorageUtil storage = new StorageUtil(getApplicationContext());
-            storage.storeAudioIndex(audioIndex);
+        {
 
             //Service is active
             //Send a broadcast to the service -> PLAY_NEW_AUDIO
             Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            sendBroadcast(broadcastIntent);
+            context.sendBroadcast(broadcastIntent);
+            Log.i("But","here");
         }
     }
 
+
+
+
+   public void initViewObjects()
+   {
+
+
+       playPauseButton_collapsed= player_View_layout.findViewById(R.id.playpause_button_player_collapsed);
+       playPauseButton_expanded = player_View_layout.findViewById(R.id.play_pause_button_expanded);
+       playNextButton_expanded =  player_View_layout.findViewById(R.id.play_next_song_button);
+       playPreviousButton_expanded=  player_View_layout.findViewById(R.id.play_previous_song_button);
+       createPlaylistButton_expanded=  player_View_layout.findViewById(R.id.add_to_playlist_Button);
+       favouriteThisButton_expanded = player_View_layout.findViewById(R.id.favourite_this_button);
+       startTimeView_expanded =  player_View_layout.findViewById(R.id.start_time_tv);
+       endTimeView_expanded =  player_View_layout.findViewById(R.id.end_time_tv);
+       shuffleSongsButton_expanded = player_View_layout.findViewById(R.id.shuffle_songs_button);
+       repeatSongsButton_expanded = player_View_layout.findViewById(R.id.repeat_song_button);
+       songSeekBar = player_View_layout.findViewById(R.id.seekBar_song);
+
+
+
+
+
+
+       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       repeatSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+       shuffleSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+
+
+
+
+
+
+
+
+   }
 
 
     @Override
@@ -568,11 +700,14 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public void onCurrentItemChanged(@Nullable RecyclerView.ViewHolder viewHolder, int adapterPosition) {
 
         int positionInDataSet = infiniteAdapter.getRealPosition(adapterPosition);
-        Log.i("position",Integer.toString(adapterPosition));
+        //Store the new audioIndex to SharedPreferences
+//        StorageUtil storage = new StorageUtil(getApplicationContext());
+//        storage.storeAudioIndex(adapterPosition);
+//        Log.i("Swipe Adapter Pos ",Integer.toString(songsList.size()));
+//
+//        if(adapterPosition>0)
         songChanged(adapterPosition);
-
-
-        playAudio(adapterPosition);
+      //  playAudio(storage.loadAudioIndex());
 
     }
 
@@ -583,25 +718,34 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
         ImageView iv= player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_art_player_collapsed);
         TextView tv= player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_title_player_collapsed);
-
-
         iv.setImageURI(Uri.parse(songsList.get(position).getSongAlbumArtPath()));
         tv.setText(songsList.get(position).getSongTitle());
         mySongsRecyclerView.scrollToPosition(position);
+
+        StorageUtil storage = new StorageUtil(context.getApplicationContext());
+        storage.storeAudioIndex(position);
+      // playAudio(0);
 
     }
 
 
 
 
-    public static void setPlayerSongsRecyclerView( List<song_template> songsList2,int position){
+    public static void setPlayerSongsRecyclerView( List<song_template> songsList2,int position,int p2){
 
+
+        songsList=songsList2;
+        p1=p2;
+        Log.i("in final position is",Integer.toString(p1));
+
+        StorageUtil storage = new StorageUtil(context.getApplicationContext());
+        storage.storeAudioIndex(p1);
         songAdapter = new songs_recyclerView_adapter(context , songsList2, 3);
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
         mySongsRecyclerView.setAdapter(songAdapter);
         mySongsRecyclerView.scrollToPosition(position);
-        MainActivity.songsList=songsList2;
-          
+
+     //   playAudio(p1);
 
     }
 
@@ -616,6 +760,12 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
 
 
+//    private String playSong2(Context context, int song_index){
+//
+//
+//        playAudio(song_index);
+//        return null;
+//    }
 
 
 
@@ -940,9 +1090,9 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     protected void onDestroy() {
         super.onDestroy();
         if (serviceBound) {
-            unbindService(serviceConnection);
-            //service is active
-            player.stopSelf();
+           // unbindService(serviceConnection);
+//            //service is active
+//            player.stopSelf();
         }
     }
 
