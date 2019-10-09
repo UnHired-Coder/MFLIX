@@ -8,8 +8,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="403dp"
+        android:layout_height="86dp"
         android:layout_margin="10dp"
         android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,43 +20,37 @@
             android:id="@+id/song_artView"
             android:layout_width="81dp"
             android:layout_height="64dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="4dp"
-            android:scaleType="fitXY"
+            android:layout_marginBottom="17dp"
+            android:scaleType="centerInside"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/song_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.454"
             app:srcCompat="@drawable/sample_avatar" />
 
         <TextView
             android:id="@+id/song_name"
-            android:layout_width="204dp"
-            android:layout_height="32dp"
+            android:layout_width="202dp"
+            android:layout_height="19dp"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="81dp"
             android:layout_marginRight="81dp"
-            android:layout_marginBottom="4dp"
             android:maxLines="1"
             android:singleLine="true"
             android:text="Give It to ME"
             android:textColor="@color/textColorWhite"
             app:layout_constraintBottom_toTopOf="@+id/song_artist"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.09"
             app:layout_constraintStart_toEndOf="@+id/song_artView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/song_artist"
-            android:layout_width="190dp"
-            android:layout_height="26dp"
+            android:layout_width="174dp"
+            android:layout_height="17dp"
             android:layout_marginStart="18dp"
             android:layout_marginLeft="18dp"
             android:layout_marginTop="3dp"
@@ -69,8 +63,10 @@
             android:textColor="@color/textColorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/song_artView"
-            app:layout_constraintTop_toBottomOf="@+id/song_name" />
+            app:layout_constraintTop_toBottomOf="@+id/song_name"
+            app:layout_constraintVertical_bias="1.0" />
 
 
     </android.support.constraint.ConstraintLayout>
@@ -82,15 +78,13 @@
         android:layout_height="22dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="70dp"
         android:layout_marginEnd="272dp"
         android:layout_marginRight="272dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.735"
+        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/like_logo" />
 
 </android.support.constraint.ConstraintLayout>

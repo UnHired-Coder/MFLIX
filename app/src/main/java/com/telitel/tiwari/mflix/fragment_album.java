@@ -108,7 +108,6 @@ public class fragment_album extends Fragment {
 
                 //  Log.i("song Name*******",songs_cursor.getString(0)+"----"+songs_cursor.getString(1));
 
-                String albumArtPath=songs_cursor.getString(songs_cursor.getColumnIndex("_song_album_art_path"));
 
                 song_template song = new song_template(0L,"",""," "," ",0L,songs_cursor.getString(songs_cursor.getColumnIndex("_song_album")),songs_cursor.getString(songs_cursor.getColumnIndex("_song_album_art_path"))," ","",songs_cursor.getString(1));
 

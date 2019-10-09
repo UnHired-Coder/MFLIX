@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,8 +52,10 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
         v= LayoutInflater.from(mContext).inflate(R.layout.song_item_large,viewGroup,false);
         else if(typeSong==2)
         v= LayoutInflater.from(mContext).inflate(R.layout.favourite_song_item,viewGroup,false);
+        else if (typeSong==4)
+        v= LayoutInflater.from(mContext).inflate(R.layout.play_list_item,viewGroup,false);
         else
-        v= LayoutInflater.from(mContext).inflate(R.layout.plyer_song_art_view,viewGroup,false);
+            v= LayoutInflater.from(mContext).inflate(R.layout.plyer_song_art_view,viewGroup,false);
 
         mySongsViewHolder vHolder = new mySongsViewHolder(v,mClickListener);
 
@@ -110,6 +111,17 @@ public  class songs_recyclerView_adapter extends RecyclerView.Adapter<songs_recy
                 mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
             else
                 mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongArtPath()));
+
+        }
+        else if(this.typeSong==4) {
+
+
+            mySongsViewHolder.itemView.setAlpha(1f);
+            if(mData.get(i).getSongTitle()!=null)
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
+            else mySongsViewHolder.tv_Name.setText("Not Found");
+                mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.splash_logo);
+
 
         }
         else {

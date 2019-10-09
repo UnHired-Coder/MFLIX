@@ -29,19 +29,19 @@
                 android:name="path_3"
                 android:pathData="M 117.369 195.447 L 184.454 195.447 L 184.187 195.447 L 184.588 195.447"
                 android:fillColor="#00ffff"
-                android:strokeColor="#cc1d1d"
+                android:strokeColor="#ff0000"
                 android:strokeWidth="7.865"
                 android:trimPathEnd="0"/>
             <path
                 android:name="path_4"
                 android:pathData="M 179.065 15.966 L 39.553 15.966 L 40.109 15.966 L 39.275 15.966"
-                android:strokeColor="#cc1d1d"
+                android:strokeColor="#ff0000"
                 android:strokeWidth="7.865"
                 android:trimPathEnd="0"/>
             <path
                 android:name="path_5"
                 android:pathData="M 22.112 135.161 L 22.493 184.71 C 23.29 192.454 27.943 195.615 37.718 195.637 L 103.188 195.26"
-                android:strokeColor="#cc1d1d"
+                android:strokeColor="#ff0000"
                 android:strokeWidth="8.065"
                 android:trimPathEnd="0"/>
         </vector>

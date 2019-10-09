@@ -95,7 +95,16 @@ public  class songsList_recyclerView_adapter extends RecyclerView.Adapter<songsL
             mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_genre);
 
         }
+        else if(type==3){
+            if (mData.get(i).getSongArtist().equals("No"))
+                mySongsViewHolder.tv_Name.setText("No Title");
+            else
+                mySongsViewHolder.tv_Name.setText(mData.get(i).getSongTitle());
 
+            mySongsViewHolder.tv_Count.setText(mData.get(i).getSongCount());
+            mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.play_list_logo);
+
+        }
 
     }
 

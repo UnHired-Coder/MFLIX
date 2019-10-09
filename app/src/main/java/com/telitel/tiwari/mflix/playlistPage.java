@@ -69,7 +69,6 @@ public class playlistPage extends Fragment  {
             public void onClick(View v) {
                 viewPager.setCurrentItem(1);
 
-
             }
         });
         genreTab.setOnClickListener(new View.OnClickListener() {

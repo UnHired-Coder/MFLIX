@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#000001</color>
     <color name="colorPrimaryDark">#000000</color>
+    <color name="colorPrimaryLight">#FFFFFF</color>
     <color name="colorAccent">#FC0404</color>
     <color name="navItemChecked">#FC0404</color>
     <color name="navItemUnChecked">#FDFDFD</color>

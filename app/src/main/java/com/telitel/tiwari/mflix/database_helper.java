@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 public class database_helper  extends SQLiteOpenHelper {
@@ -30,6 +32,9 @@ public class database_helper  extends SQLiteOpenHelper {
         db.execSQL(sql);
 
         sql="CREATE TABLE IF NOT EXISTS _playlists_tb(_id INTEGER PRIMARY KEY AUTOINCREMENT, _playlist_name_  VARCHAR)";
+        db.execSQL(sql);
+
+        sql = "CREATE TABLE IF NOT EXISTS _favourite_list_00100_ (_id INTEGER PRIMARY KEY AUTOINCREMENT, _song_id VARCHAR, _song_title VARCHAR, _song_artist VARCHAR,_song_genre VARCHAR, _song_album_id VARCHAR, _song_album VARCHAR, _song_album_art_path VARCHAR,_song_art_path VARCHAR, _song_path VARCHAR,_is_favourite VARCHAR)";
         db.execSQL(sql);
 
     }
@@ -68,7 +73,7 @@ public class database_helper  extends SQLiteOpenHelper {
         else {
 
             //Create New Playlist
-            String sql = "CREATE TABLE IF NOT EXISTS '" + playlistName + "'(_id INTEGER PRIMARY KEY AUTOINCREMENT, _song_id VARCHAR)";
+            String sql = "CREATE TABLE IF NOT EXISTS '" + playlistName + "'(_id INTEGER PRIMARY KEY AUTOINCREMENT, _song_id VARCHAR, _song_title VARCHAR, _song_artist VARCHAR,_song_genre VARCHAR, _song_album_id VARCHAR, _song_album VARCHAR, _song_album_art_path VARCHAR,_song_art_path VARCHAR, _song_path VARCHAR,_is_favourite VARCHAR)";
             db.execSQL(sql);
 
             ContentValues Playlist_name=new ContentValues();
@@ -133,15 +138,45 @@ public class database_helper  extends SQLiteOpenHelper {
 
 
         Song_details.put("_song_id",s.getSongId());
+        Song_details.put("_song_title",s.getSongTitle());
+        Song_details.put("_song_artist",s.getSongArtist());
+        Song_details.put("_song_genre",s.getSongGener());
+        Song_details.put("_song_album_id",s.getSongAlbumId());
+        Song_details.put("_song_album",s.getSongAlbum());
+        Song_details.put("_song_album_art_path",s.getSongAlbumArtPath());
+        Song_details.put("_song_art_path",s.getSongArtPath());
+        Song_details.put("_song_path",s.getSongPath());
+        Song_details.put("_is_favourite",s.getIsFavourite());
 
         playlistName="'"+playlistName+"'";
 
         database.insert(playlistName,null,Song_details);
 
-
     }
 
+    public static void addThisToFavourites(song_template s,SQLiteDatabase db){
 
+        ContentValues Song_details=new ContentValues();
+
+
+        Song_details.put("_song_id",s.getSongId());
+        Song_details.put("_song_title",s.getSongTitle());
+        Song_details.put("_song_artist",s.getSongArtist());
+        Song_details.put("_song_genre",s.getSongGener());
+        Song_details.put("_song_album_id",s.getSongAlbumId());
+        Song_details.put("_song_album",s.getSongAlbum());
+        Song_details.put("_song_album_art_path",s.getSongAlbumArtPath());
+        Song_details.put("_song_art_path",s.getSongArtPath());
+        Song_details.put("_song_path",s.getSongPath());
+        Song_details.put("_is_favourite",s.getIsFavourite());
+
+
+        String sql = "CREATE TABLE IF NOT EXISTS _favourite_list_00100_ (_id INTEGER PRIMARY KEY AUTOINCREMENT, _song_id VARCHAR, _song_title VARCHAR, _song_artist VARCHAR,_song_genre VARCHAR, _song_album_id VARCHAR, _song_album VARCHAR, _song_album_art_path VARCHAR,_song_art_path VARCHAR, _song_path VARCHAR,_is_favourite VARCHAR)";
+        db.execSQL(sql);
+
+        db.insert("_favourite_list_00100_",null,Song_details);
+
+    }
 
 
     public static boolean deleteThisPlaylist(String playlistTableName,SQLiteDatabase database){

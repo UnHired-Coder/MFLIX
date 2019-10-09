@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.telitel.tiwari.mflix.MainActivity.Broadcast_PLAY_NEW_AUDIO;
@@ -192,12 +193,13 @@ public class homePage extends Fragment {
 
          }
 
+            Collections.shuffle(topPicsList);
 
 
 
 
 
-//        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","");
+       song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","","");
 //
 //
 //

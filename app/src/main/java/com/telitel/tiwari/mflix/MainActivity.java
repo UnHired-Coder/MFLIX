@@ -35,12 +35,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public static database_helper _songs_database_helper;
     SQLiteDatabase songs_database;
 
-
+    public song_template st;
 
 
 
@@ -130,9 +133,10 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     //songSeekBar handler
     private Handler myHandler = new Handler();
 
-    boolean isPlaying =false;
+   public static boolean isPlaying =false;
     private double startTime = 0;
     private double finalTime = 0;
+    public static int currentPos=0;
 
 
 
@@ -173,6 +177,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             menuToggle.syncState();
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             menuToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.sideMenuToogleIconColor));
+
 
 
             navigationView = findViewById(R.id.bottomNavigationView);
@@ -455,6 +460,32 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                         player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f);
 
                         navigationView.setVisibility(View.VISIBLE);
+                        playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if(isPlaying){
+                                    Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                                    myHandler.postDelayed(UpdateSongTime,100);
+                                    context.sendBroadcast(broadcastIntent);
+                                    Log.i("paused","music ");
+                                    playPauseButton_collapsed.setImageResource(R.drawable.play_button);
+                                    playPauseButton_expanded.setImageResource(R.drawable.play_button);
+                                    isPlaying=false;
+                                }
+                                else
+                                {
+                                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                                    myHandler.postDelayed(UpdateSongTime,100);
+                                    context.sendBroadcast(broadcastIntent);
+                                    Log.i("played","music ");
+                                    playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                                    playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                                    isPlaying=true;
+                                }
+
+                            }
+                        });
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
 
@@ -468,7 +499,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                         player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(0f);
                         player_View_layout.findViewById(R.id.collapsed_player_view).setClickable(false);
                         player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setClickable(false);
-                        player_View_layout.getRootView().setBackgroundColor(Color.BLACK);
 
                         navigationView.setVisibility(View.GONE);
 
@@ -492,7 +522,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             public void onSlide(@NonNull View view, float v) {
 
                 if (v > 0.4f)
-                    player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
+
+                player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
                 player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f - v);
                 player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f - v);
                 ObjectAnimator animation = ObjectAnimator.ofFloat(navigationView, "translationY", v * 80f);
@@ -577,29 +608,25 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
            @Override
            public void onClick(View v) {
 
-
-
-            if(isPlaying){
-                Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-                context.sendBroadcast(broadcastIntent);
-                myHandler.postDelayed(UpdateSongTime,100);
-                Log.i("paused","music ");
-                playPauseButton_collapsed.setImageResource(R.drawable.play_button);
-                playPauseButton_expanded.setImageResource(R.drawable.play_button);
-                isPlaying=false;
-
-            }
-            else
-            {
-                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-                myHandler.postDelayed(UpdateSongTime,100);
-                context.sendBroadcast(broadcastIntent);
-                Log.i("played","music ");
-                playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
-                playPauseButton_expanded.setImageResource(R.drawable.pause_button);
-                isPlaying=true;
-
-            }
+               if(isPlaying){
+                   Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                   myHandler.postDelayed(UpdateSongTime,100);
+                   context.sendBroadcast(broadcastIntent);
+                   Log.i("paused","music ");
+                   playPauseButton_collapsed.setImageResource(R.drawable.play_button);
+                   playPauseButton_expanded.setImageResource(R.drawable.play_button);
+                   isPlaying=false;
+               }
+               else
+               {
+                   Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                   myHandler.postDelayed(UpdateSongTime,100);
+                   context.sendBroadcast(broadcastIntent);
+                   Log.i("played","music ");
+                   playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                   playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                   isPlaying=true;
+               }
 
            }
        });
@@ -609,6 +636,10 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
            public void onClick(View v) {
 
                if(isPlaying){
+                   if(player.mediaPlayer!=null)
+                   currentPos=player.mediaPlayer.getCurrentPosition();
+                   else
+                    currentPos=0;
                    Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
                    myHandler.postDelayed(UpdateSongTime,100);
                    context.sendBroadcast(broadcastIntent);
@@ -645,8 +676,10 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                    storage.storeAudioIndex(storage.loadAudioIndex()+1);
                }
                songChanged(storage.loadAudioIndex());
+               currentPos=0;
                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
                context.sendBroadcast(broadcastIntent);
+               mySongsRecyclerView.smoothScrollToPosition(storage.loadAudioIndex());
 
            }
        });
@@ -664,6 +697,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                    storage.storeAudioIndex(storage.loadAudioIndex()-1);
                }
                songChanged(storage.loadAudioIndex());
+               currentPos=0;
                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
                context.sendBroadcast(broadcastIntent);
 
@@ -674,12 +708,49 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
            @Override
            public void onClick(View v) {
 
+               StorageUtil storage = new StorageUtil(context.getApplicationContext());
+               song_template favourite_song=storage.loadAudio().get(storage.loadAudioIndex());
+
+               song_template s=new song_template();
+                       s.setSongId(favourite_song.getSongId());
+                       s.setSongTitle(favourite_song.getSongTitle());
+                       s.setSongArtist(favourite_song.getSongArtist());
+                       s.setSongGener(favourite_song.getSongGener());
+               s.setSongAlbumId(favourite_song.getSongAlbumId());
+                       s.setSongAlbum(favourite_song.getSongAlbum());
+                       s.setSongPath(favourite_song.getSongPath());
+                       s.setSongAlbumArtPath(favourite_song.getSongAlbumArtPath());
+                       s.setSongArtPath(favourite_song.getSongArtPath());
+                       s.setIsFavourite(favourite_song.getIsFavourite());
+
+                       addToPLaylist(s);
+
+
+
            }
        });
 
        favouriteThisButton_expanded.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
+               StorageUtil storage = new StorageUtil(context.getApplicationContext());
+               song_template favourite_song=storage.loadAudio().get(storage.loadAudioIndex());
+
+               song_template s=new song_template();
+               s.setSongId(favourite_song.getSongId());
+               s.setSongTitle(favourite_song.getSongTitle());
+               s.setSongArtist(favourite_song.getSongArtist());
+               s.setSongGener(favourite_song.getSongGener());
+               s.setSongAlbumId(favourite_song.getSongAlbumId());
+               s.setSongAlbum(favourite_song.getSongAlbum());
+               s.setSongPath(favourite_song.getSongPath());
+               s.setSongAlbumArtPath(favourite_song.getSongAlbumArtPath());
+               s.setSongArtPath(favourite_song.getSongArtPath());
+               s.setIsFavourite(favourite_song.getIsFavourite());
+
+               database_helper.addThisToFavourites(s,songs_database);
+
+
 
            }
        });
@@ -688,6 +759,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
            @Override
            public void onClick(View v) {
 
+               Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+               context.sendBroadcast(broadcastIntent);
                Collections.shuffle(songsList);
                StorageUtil storage = new StorageUtil(context.getApplicationContext());
                storage.clearCachedAudioPlaylist();
@@ -698,14 +771,12 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                mySongsRecyclerView.setAdapter(songAdapter);
              //  mySongsRecyclerView.scrollToPosition(0);
 
-
-               Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+               broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
                context.sendBroadcast(broadcastIntent);
                myHandler.postDelayed(UpdateSongTime,100);
 
                Log.i("played","music ");
-               playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
-               isPlaying=true;
+
 
            }
        });
@@ -796,6 +867,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //
 //        if(adapterPosition>0)
         songChanged(adapterPosition);
+        currentPos=0;
       //  playAudio(storage.loadAudioIndex());
 
     }
@@ -842,7 +914,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
         context.sendBroadcast(broadcastIntent);
         songChanged(position);
-
+        if(!isPlaying)
+        player_View_layout.findViewById(R.id.play_pause_button_expanded).callOnClick();
 
     }
 
@@ -941,14 +1014,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     }
 
 
-
-
-
-
-
-
-
-
     public static void setupFm(FragmentManager fragmentManager, ViewPager viewPager){
 
         fragment_pager_adapter Adapter = new fragment_pager_adapter(fragmentManager);
@@ -963,6 +1028,125 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         viewPager.setAdapter(Adapter);
 
     }
+
+
+    void addToPLaylist(song_template s){
+
+
+        st=s;
+        ImageView createNewPlayList;
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptView = layoutInflater.inflate(R.layout.select_playlist_popup, null);
+
+        final RecyclerView myPlaylistsSongRecyclerView;
+        final AlertDialog alertD = new AlertDialog.Builder(this).create();
+        final List<song_template> listOfPlayLists=new ArrayList<>();
+
+        _songs_database_helper = new database_helper(getApplicationContext());
+        songs_database = _songs_database_helper.getWritableDatabase();
+
+        createNewPlayList=promptView.findViewById(R.id.createPlaylistButtonPopup);
+        myPlaylistsSongRecyclerView= promptView.findViewById(R.id.selectPlaylistRecyclerView);
+
+        final songs_recyclerView_adapter playListsAdapter = new songs_recyclerView_adapter(getApplicationContext(), listOfPlayLists,4);
+        myPlaylistsSongRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        myPlaylistsSongRecyclerView.setAdapter(playListsAdapter);
+
+
+
+        Cursor songs_cursor2 = songs_database.rawQuery("SELECT * FROM _playlists_tb ",new String[]{});
+        if (songs_cursor2 != null) {
+            if (songs_cursor2.moveToFirst()) {
+                do {
+                    // Log.i("song Name",cursor.getString(0)+"--- "+cursor.getString(1)+"---- "+cursor.getString(2)+" ---"+cursor.getString(3)+" ---"+cursor.getString(4)+"--- "+cursor.getString(5)+"--- "+cursor.getString(6)+" ---"+cursor.getString(7)+" ---"+cursor.getString(8));
+                    //   Log.i("+++++++++++++++++", songs_cursor2.getString(0) + "----" + songs_cursor2.getString(1));
+
+
+                    song_template song = new song_template(0L,songs_cursor2.getString(songs_cursor2.getColumnIndex("_playlist_name_")),""," "," ",0L," "," "," ","","");
+                    listOfPlayLists.add(song);
+
+                } while (songs_cursor2.moveToNext());
+            }
+
+            songs_cursor2.close();
+
+        }
+
+
+
+        createNewPlayList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPlayList();
+                alertD.dismiss();
+            }
+        });
+
+        playListsAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                database_helper.addThisToPlaylist(listOfPlayLists.get(position).getSongTitle(),st,songs_database);
+                alertD.dismiss();
+                playListsAdapter.notifyDataSetChanged();
+            }
+        });
+
+        alertD.setView(promptView);
+        alertD.show();
+
+    }
+
+
+    public  void getPlayList(){
+
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptView = layoutInflater.inflate(R.layout.create_playlist_name_popup, null);
+
+        final AlertDialog alertD = new AlertDialog.Builder(this).create();
+
+        final EditText userInput = (EditText) promptView.findViewById(R.id.playlistnameView);
+
+        ImageView btnAdd1 = (ImageView) promptView.findViewById(R.id.createPlaylistOk);
+        ImageView btnAdd2 = (ImageView) promptView.findViewById(R.id.createPlaylistCancel);
+
+        btnAdd1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // btnAdd1 has been clicked
+
+                boolean success= database_helper.createPlayList(songs_database,userInput.getText().toString());
+                if(success)
+                    Toast.makeText(context,"Created Playlist",Toast.LENGTH_SHORT);
+                else
+                    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT);
+                database_helper.addThisToPlaylist(userInput.getText().toString(),st,songs_database);
+                alertD.dismiss();
+
+            }
+        });
+
+        btnAdd2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                // btnAdd2 has been clicked
+                alertD.dismiss();
+
+            }
+        });
+
+        alertD.setView(promptView);
+        alertD.show();
+
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1172,7 +1356,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean("ServiceState", serviceBound);
-        savedInstanceState.putBoolean("isPlaying", isPlaying);
+       // savedInstanceState.putBoolean("isPlaying", isPlaying);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -1180,7 +1364,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         serviceBound = savedInstanceState.getBoolean("ServiceState");
-        isPlaying = savedInstanceState.getBoolean("isPlaying");
+       // isPlaying = savedInstanceState.getBoolean("isPlaying");
 
     }
 

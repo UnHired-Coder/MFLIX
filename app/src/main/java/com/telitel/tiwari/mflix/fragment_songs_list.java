@@ -128,6 +128,11 @@ public class fragment_songs_list extends Fragment {
              songs_cursor = songs_database.rawQuery("SELECT * FROM _songs_tb WHERE _song_genre=?", new String[]{getArguments().getString("list_filter")});
 
         }
+        if(getArguments().getString("type").equals("playlist")){
+
+            songs_cursor = songs_database.rawQuery("SELECT * FROM '"+getArguments().getString("list_filter")+"'", new String[]{});
+
+        }
 
 
 
@@ -138,16 +143,14 @@ public class fragment_songs_list extends Fragment {
         if (songs_cursor != null) {
             if (songs_cursor.moveToFirst()) {
                 songs_cursor.moveToFirst();
-
                 do {
 
                     // Log.i("song Name",cursor.getString(0)+"--- "+cursor.getString(1)+"---- "+cursor.getString(2)+" ---"+cursor.getString(3)+" ---"+cursor.getString(4)+"--- "+cursor.getString(5)+"--- "+cursor.getString(6)+" ---"+cursor.getString(7)+" ---"+cursor.getString(8));
 
-                    //  Log.i("song Name", songs_cursor.getString(0) + "----" + songs_cursor.getString(1));
+                     Log.i("song Name", songs_cursor.getString(0) + "----" +songs_cursor.getString(songs_cursor.getColumnIndex("_song_title")));
 
-                    song_template song = new song_template(songs_cursor.getLong(songs_cursor.getColumnIndex("_song_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_title")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_artist")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_genre")), songs_cursor.getString(songs_cursor.getColumnIndex("_is_favourite")), songs_cursor.getLong(songs_cursor.getColumnIndex("_song_album_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_path")), "");
-
-                    songsList.add(song);
+                   song_template song = new song_template(songs_cursor.getLong(songs_cursor.getColumnIndex("_song_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_title")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_artist")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_genre")), songs_cursor.getString(songs_cursor.getColumnIndex("_is_favourite")), songs_cursor.getLong(songs_cursor.getColumnIndex("_song_album_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_path")),"0");
+                   songsList.add(song);
 
                 } while (songs_cursor.moveToNext());
 

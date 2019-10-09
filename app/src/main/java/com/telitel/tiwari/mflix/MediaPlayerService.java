@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.telitel.tiwari.mflix.App_start.CHANNEL_1_ID;
+import static com.telitel.tiwari.mflix.MainActivity.currentPos;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
@@ -187,12 +188,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         if (mediaSessionManager == null) {
             try {
                 initMediaSession();
-                initMediaPlayer();
+               // initMediaPlayer();
             } catch (RemoteException e) {
                 e.printStackTrace();
                 stopSelf();
             }
-            buildNotification(PlaybackStatus.PLAYING);
+            buildNotification(PlaybackStatus.PAUSED);
         }
 
         //Handle Intent action from MediaSession.TransportControls
@@ -383,7 +384,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public void onPrepared(MediaPlayer mp) {
          //Invoked when the media source is ready for playback.
-           playMedia();
+        mediaPlayer.seekTo((int) currentPos);
+        playMedia();
 
     }
 
@@ -404,8 +406,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 // Lost focus for an unbounded amount of time: stop playback and release media player
-                if (mediaPlayer.isPlaying()) mediaPlayer.stop();
-                mediaPlayer.release();
+                if(mediaPlayer!=null)
+                {if (mediaPlayer.isPlaying()) mediaPlayer.stop();
+                mediaPlayer.release();}
                 mediaPlayer = null;
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -440,10 +443,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         return AudioManager.AUDIOFOCUS_REQUEST_GRANTED ==
                 audioManager.abandonAudioFocus(this);
     }
-
-
-
-
 
     private void playMedia() {
         if (!mediaPlayer.isPlaying()) {
@@ -810,8 +809,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
             //A PLAY_NEW_AUDIO action received
             //reset mediaPlayer to play the new Audio
+
+
             stopMedia();
-            mediaPlayer.reset();
+            //mediaPlayer.reset();
             initMediaPlayer();
             updateMetaData();
             buildNotification(PlaybackStatus.PLAYING);
@@ -842,7 +843,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
             //A PLAY_NEW_AUDIO action received
             //reset mediaPlayer to play the new Audio
-            stopMedia();
+            pauseMedia();
+            //stopMedia();
             buildNotification(PlaybackStatus.PAUSED);
 
 
@@ -863,9 +865,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mediaPlayer.setOnSeekCompleteListener(this);
         mediaPlayer.setOnInfoListener(this);
         //Reset so that the MediaPlayer is not pointing to another data source
+
         mediaPlayer.reset();
-
-
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             // Set the data source to the mediaFile location
