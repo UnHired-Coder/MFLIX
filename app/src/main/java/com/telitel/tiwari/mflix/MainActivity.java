@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -39,6 +40,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,13 +61,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+
+
+
+
+
+
+
 public class MainActivity extends AppCompatActivity  implements DiscreteScrollView.OnItemChangedListener,
-        View.OnClickListener  {
+        View.OnClickListener ,side_nav_toggle {
 
 
     private int STORAGE_PERMISSION_CODE = 1;
 
-    private DrawerLayout menuDrawer;
+    public static DrawerLayout menuDrawer;
     private ActionBarDrawerToggle menuToggle;
 
 
@@ -78,7 +87,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public static InfiniteScrollAdapter infiniteAdapter;
     public static songs_recyclerView_adapter songAdapter;
 
-   public static   List<song_template> songsList;
+    public static   List<song_template> songsList;
     public static   List<song_template> songsListFinal;
     public static View player_View_layout;
 
@@ -136,7 +145,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
    public static boolean isPlaying =false;
     private double startTime = 0;
     private double finalTime = 0;
-    public static int currentPos=0;
+    public static int currentPos;
 
 
 
@@ -178,6 +187,37 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             menuToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.sideMenuToogleIconColor));
 
+            NavigationView sideNavigationView = findViewById(R.id.sideNavView);
+            sideNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    menuDrawer.closeDrawer(Gravity.LEFT);
+                    switch (menuItem.getItemId()) {
+
+                        case R.id.equlizer:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new equalizer_side_nav()).addToBackStack(null).commit();
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            break;
+
+                        case R.id.settings:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new equalizer_side_nav()).commit();
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            break;
+
+                        case R.id.help:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new equalizer_side_nav()).commit();
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            break;
+
+                        case R.id.info:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new equalizer_side_nav()).commit();
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            break;
+                    }
+                    return true;
+                }
+            });
 
 
             navigationView = findViewById(R.id.bottomNavigationView);
@@ -187,7 +227,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             player_View_layout.setVisibility(View.VISIBLE);
 
             View bottomSheet = findViewById(R.id.bottom_sheet);
-            ;
+
             mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
             mBottomSheetBehavior.setHideable(false);
             mBottomSheetBehavior.setPeekHeight(150);
@@ -364,11 +404,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             }
 
 
-
-
             StorageUtil storage = new StorageUtil(getApplicationContext());
-            storage.storeAudio(songsList);
-            storage.storeAudioIndex(0);
 
             Intent playerIntent = new Intent(this, MediaPlayerService.class);
             startService(playerIntent);
@@ -376,8 +412,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
             Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
             context.sendBroadcast(broadcastIntent);
-
-
 
 //        if(storage.loadAudio()==null)
 //        storage.storeAudio(songsList);
@@ -395,43 +429,49 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //        Log.i("initial",storage.loadAudio().get(storage.loadAudioIndex()).getSongTitle());
 
 
-        // playAudio(storage.loadAudioIndex());
+            // playAudio(storage.loadAudioIndex());
 
 
 //Discrete Player Recycler View
 
 
-        mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
-        mySongsRecyclerView.addOnItemChangedListener(this);
+            mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
+            mySongsRecyclerView.addOnItemChangedListener(this);
 
 
-        mySongsRecyclerView.addScrollStateChangeListener(new DiscreteScrollView.ScrollStateChangeListener<RecyclerView.ViewHolder>() {
-            @Override
-            public void onScrollStart(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
+            mySongsRecyclerView.addScrollStateChangeListener(new DiscreteScrollView.ScrollStateChangeListener<RecyclerView.ViewHolder>() {
+                @Override
+                public void onScrollStart(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
 
-            }
+                }
 
-            @Override
-            public void onScrollEnd(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
+                @Override
+                public void onScrollEnd(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
 
-                StorageUtil storage = new StorageUtil(getApplicationContext());
-                storage.storeAudioIndex(adapterPosition);
-                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-                context.sendBroadcast(broadcastIntent);
-            }
+                    StorageUtil storage = new StorageUtil(getApplicationContext());
+                    storage.storeAudioIndex(adapterPosition);
+                    if (isPlaying == true) {
+                        Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                        context.sendBroadcast(broadcastIntent);
+                    }
+                }
 
-            @Override
-            public void onScroll(float scrollPosition, int currentPosition, int newPosition, @Nullable RecyclerView.ViewHolder currentHolder, @Nullable RecyclerView.ViewHolder newCurrent) {
+                @Override
+                public void onScroll(float scrollPosition, int currentPosition, int newPosition, @Nullable RecyclerView.ViewHolder currentHolder, @Nullable RecyclerView.ViewHolder newCurrent) {
 
-            }
-        });
+                }
+            });
 
+            if(storage.loadAudio().size()>0)
+                setPlayerSongsRecyclerView(storage.loadAudio(), storage.loadAudioIndex());
 
-        setPlayerSongsRecyclerView(songsList, 0);
+            else
+               setPlayerSongsRecyclerView(songsList, 0);
 
 
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
         mySongsRecyclerView.setAdapter(songAdapter);
+
 
 
         mySongsRecyclerView.setItemTransformer(new ScaleTransformer.Builder()
@@ -444,10 +484,12 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
 
 
+        mySongsRecyclerView.scrollToPosition(storage.loadAudioIndex());
+
+
+
 
         initViewObjects();
-
-
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View view, int i) {
@@ -536,6 +578,8 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
     }
 
+
+
     }
 
 
@@ -609,6 +653,10 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
            public void onClick(View v) {
 
                if(isPlaying){
+                   if(player.mediaPlayer!=null)
+                       currentPos=player.mediaPlayer.getCurrentPosition();
+                   else
+                       currentPos=0;
                    Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
                    myHandler.postDelayed(UpdateSongTime,100);
                    context.sendBroadcast(broadcastIntent);
@@ -725,8 +773,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
                        addToPLaylist(s);
 
-
-
            }
        });
 
@@ -749,28 +795,27 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                s.setIsFavourite(favourite_song.getIsFavourite());
 
                database_helper.addThisToFavourites(s,songs_database);
-
-
-
+               if(fragment_favourite.songAdapter!=null) {
+                   fragment_favourite.songsList.add(s);
+                   fragment_favourite.songAdapter.notifyDataSetChanged();
+               }
            }
        });
 
        shuffleSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-
                Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
                context.sendBroadcast(broadcastIntent);
                Collections.shuffle(songsList);
                StorageUtil storage = new StorageUtil(context.getApplicationContext());
                storage.clearCachedAudioPlaylist();
-               storage.storeAudioIndex(storage.loadAudioIndex());
                storage.storeAudio(songsList);
+               storage.storeAudioIndex(0);
                songAdapter = new songs_recyclerView_adapter(context , songsList, 3);
                infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
                mySongsRecyclerView.setAdapter(songAdapter);
-             //  mySongsRecyclerView.scrollToPosition(0);
-
+               //  mySongsRecyclerView.scrollToPosition(0);
                broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
                context.sendBroadcast(broadcastIntent);
                myHandler.postDelayed(UpdateSongTime,100);
@@ -815,6 +860,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
    }
 
+
     private Runnable UpdateSongTime = new Runnable() {
         public void run() {
 
@@ -843,11 +889,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             myHandler.postDelayed(this, 1000);
         }
     };
-
-
-
-
-
 
 
 
@@ -1119,6 +1160,11 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 else
                     Toast.makeText(context,"Failed",Toast.LENGTH_SHORT);
                 database_helper.addThisToPlaylist(userInput.getText().toString(),st,songs_database);
+                if(fragment_playlists.songAdapter!=null) {
+                    song_template newSt=new song_template(0L,userInput.getText().toString(),""," "," ",0L," "," "," ","","");
+                    fragment_playlists.playListsList.add(newSt);
+                    fragment_playlists.songAdapter.notifyDataSetChanged();
+                }
                 alertD.dismiss();
 
             }
@@ -1137,18 +1183,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         alertD.show();
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1356,6 +1390,9 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean("ServiceState", serviceBound);
+        StorageUtil storage = new StorageUtil(getApplicationContext());
+        savedInstanceState.putInt("pos",storage.loadAudioIndex());
+        savedInstanceState.putInt("seekpos",currentPos);
        // savedInstanceState.putBoolean("isPlaying", isPlaying);
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -1364,34 +1401,30 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         serviceBound = savedInstanceState.getBoolean("ServiceState");
-       // isPlaying = savedInstanceState.getBoolean("isPlaying");
+        StorageUtil storage = new StorageUtil(getApplicationContext());
 
+        storage.storeAudioIndex( savedInstanceState.getInt("pos"));
+        currentPos=savedInstanceState.getInt("seekpos");
+       // isPlaying = savedInstanceState.getBoolean("isPlaying");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //currentPos=0;
         if (serviceBound) {
-           // unbindService(serviceConnection);
+            unbindService(serviceConnection);
 //            //service is active
 //            player.stopSelf();
         }
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        menuDrawer.setDrawerLockMode(lockMode);
+        menuToggle.setDrawerIndicatorEnabled(enabled);
+    }
 }

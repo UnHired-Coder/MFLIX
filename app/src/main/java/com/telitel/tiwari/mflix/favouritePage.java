@@ -99,8 +99,6 @@ public class favouritePage extends Fragment {
 
 
 
-
-
         return v;
     }
 

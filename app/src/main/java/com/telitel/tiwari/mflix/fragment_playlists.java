@@ -21,7 +21,7 @@ import java.util.List;
 public class fragment_playlists extends Fragment {
 
     private RecyclerView myPlaylistsRecyclerView;
-    private List<song_template> playListsList;
+    public static List<song_template> playListsList;
     public static songsList_recyclerView_adapter songAdapter;
 
     static SQLiteDatabase songs_database;

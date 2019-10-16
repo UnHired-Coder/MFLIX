@@ -24,7 +24,7 @@ public class fragment_favourite extends Fragment {
 
 
     private RecyclerView myFavouriteRecyclerView;
-    private List<song_template> songsList;
+    public static List<song_template> songsList;
     public static  songs_recyclerView_adapter songAdapter;
 
     static database_helper _songs_database_helper;
@@ -39,7 +39,7 @@ public class fragment_favourite extends Fragment {
   View v =inflater.inflate(R.layout.fragment_favourite,null);
 
         myFavouriteRecyclerView = (RecyclerView) v.findViewById(R.id.favourite_Songs_recyclerView);
-         songAdapter = new songs_recyclerView_adapter(getContext(), songsList,2);
+        songAdapter = new songs_recyclerView_adapter(getContext(), songsList,2);
         myFavouriteRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         myFavouriteRecyclerView.setAdapter(songAdapter);
 
@@ -53,14 +53,17 @@ public class fragment_favourite extends Fragment {
                 // MainActivity.playAudio(0);
                 //Service is active
                 //Send a broadcast to the service -> PLAY_NEW_AUDIO
-                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-                getActivity().sendBroadcast(broadcastIntent);
+                if(MainActivity.isPlaying) {
+                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                    getActivity().sendBroadcast(broadcastIntent);
+                }
                 Log.i("But","here");
                 MainActivity.setPlayerSongsRecyclerView(songsList,position);
 
             }
         });
 
+       songAdapter.notifyDataSetChanged();
         return v;
     }
 

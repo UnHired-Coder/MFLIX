@@ -74,8 +74,10 @@ public class fragment_songs_list extends Fragment {
                 // MainActivity.playAudio(0);
                 //Service is active
                 //Send a broadcast to the service -> PLAY_NEW_AUDIO
-                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-                getActivity().sendBroadcast(broadcastIntent);
+                if(MainActivity.isPlaying) {
+                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                    getActivity().sendBroadcast(broadcastIntent);
+                }
                 Log.i("But","here");
                 MainActivity.setPlayerSongsRecyclerView(songsList,position);
 

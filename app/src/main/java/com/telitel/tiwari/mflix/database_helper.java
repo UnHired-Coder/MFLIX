@@ -60,9 +60,9 @@ public class database_helper  extends SQLiteOpenHelper {
             return  false;
         }
 
+
         String sql2 = "SELECT * FROM _playlists_tb WHERE _playlist_name_= " +"'"+ playlistName+"'";
         Cursor cursor = db.rawQuery(sql2, null);
-
 
 
         if(cursor.moveToFirst()) {

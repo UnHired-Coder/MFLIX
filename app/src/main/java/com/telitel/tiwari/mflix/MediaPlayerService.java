@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.telitel.tiwari.mflix.App_start.CHANNEL_1_ID;
+import static com.telitel.tiwari.mflix.MainActivity.Broadcast_PLAY_NEW_AUDIO;
 import static com.telitel.tiwari.mflix.MainActivity.currentPos;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener,
@@ -42,6 +43,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
 
 
+    private boolean playing=false;
 
     public MediaPlayer mediaPlayer;
 
@@ -68,12 +70,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private ArrayList<song_template> audioList;
     private int audioIndex = -1;
     private song_template activeAudio; //an object of the currently playing audio
-
-
-
-
-
-
+    private application_running_helper Helper;
 
 
     public class LocalBinder extends Binder {
@@ -193,7 +190,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 e.printStackTrace();
                 stopSelf();
             }
-            buildNotification(PlaybackStatus.PAUSED);
+           // buildNotification(PlaybackStatus.PAUSED);
         }
 
         //Handle Intent action from MediaSession.TransportControls
@@ -241,7 +238,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                         // Attach our MediaSession token
                         .setMediaSession(mediaSession.getSessionToken())
                         // Show our playback controls in the compact notification view.
-                        .setShowActionsInCompactView(0, 1, 2))
+                        .setShowActionsInCompactView(0, 1, 2,3))
            //     .setStyle(new NotificationCompat.BigPictureStyle()
            //     .bigPicture(largeIcon)
            //     .bigLargeIcon(null))
@@ -255,7 +252,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 // Add playback actions
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
                 .addAction(notificationAction, "pause", play_pauseAction)
-                .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2)).build();
+                .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2))
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel,"close",playbackAction(4)).build();
 
 
 
@@ -263,7 +261,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 //        Log.i("Notification","here------------------");
 
         startForeground(1,notificationBuilder);
-
         //        sendOnChannel();
     }
 
@@ -275,8 +272,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
    private void removeNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_ID);
-    }
+        notificationManager.cancel(1);
+        notificationManager.cancelAll();
+        Log.i("cancel","notification");
+
+   }
 
 
 
@@ -351,9 +351,35 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public void onCompletion(MediaPlayer mp) {
         //Invoked when playback of a media source has completed. //Invoked when playback of a media source has completed.
-            stopMedia();
+           // stopMedia();
             //stop the service
-            stopSelf();
+          // stopSelf();
+        mp.reset();
+        playing=false;
+        currentPos=0;
+        mp.seekTo(0);
+        StorageUtil storage = new StorageUtil(getApplicationContext());
+
+        if(storage.loadAudioIndex()+1>=storage.loadAudio().size()){
+            storage.storeAudioIndex(0);
+        }
+        else
+        {
+            storage.storeAudioIndex(storage.loadAudioIndex()+1);
+        }
+        Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+        getApplicationContext().sendBroadcast(broadcastIntent);
+        currentPos=0;
+        if (Helper.isAppRunning(MediaPlayerService.this, "com.telitel.tiwari.mflix")) {
+            // App is running
+            MainActivity.songChanged(storage.loadAudioIndex());
+            MainActivity.mySongsRecyclerView.smoothScrollToPosition(storage.loadAudioIndex());
+            updateMetaData();
+        } else {
+            // App is not running
+            updateMetaData();
+
+        }
 
     }
 
@@ -386,6 +412,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
          //Invoked when the media source is ready for playback.
         mediaPlayer.seekTo((int) currentPos);
         playMedia();
+        playing=true;
 
     }
 
@@ -401,14 +428,22 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             case AudioManager.AUDIOFOCUS_GAIN:
                 // resume playback
                 if (mediaPlayer == null) initMediaPlayer();
-                else if (!mediaPlayer.isPlaying()) mediaPlayer.start();
-                mediaPlayer.setVolume(1.0f, 1.0f);
-                break;
+                else if (!playing)
+                    if(!mediaPlayer.isPlaying()) {
+                        mediaPlayer.start();
+                        playing=true;
+                        mediaPlayer.setVolume(1.0f, 1.0f);
+                    }
+                     break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 // Lost focus for an unbounded amount of time: stop playback and release media player
-                if(mediaPlayer!=null)
-                {if (mediaPlayer.isPlaying()) mediaPlayer.stop();
-                mediaPlayer.release();}
+                if(mediaPlayer!=null) {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                        playing=false;
+                    }
+                }
                 mediaPlayer = null;
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -420,6 +455,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 // Lost focus for a short time, but it's ok to keep playing
                 // at an attenuated level
+                if(!playing)
                 if (mediaPlayer.isPlaying()) mediaPlayer.setVolume(0.1f, 0.1f);
                 break;
         }
@@ -445,8 +481,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void playMedia() {
+        if(!playing)
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();
+            playing=true;
             Log.i("From Here 1","playing");
         }
     }
@@ -455,20 +493,25 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         if (mediaPlayer == null) return;
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
+            playing=false;
         }
     }
 
     private void pauseMedia() {
+        if(playing)
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+            playing=false;
             resumePosition = mediaPlayer.getCurrentPosition();
         }
     }
 
     private void resumeMedia() {
+        if(!playing)
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.seekTo(2000);
             mediaPlayer.start();
+            playing=true;
         }
     }
 
@@ -507,6 +550,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 super.onPlay();
                 resumeMedia();
                 buildNotification(PlaybackStatus.PLAYING);
+
             }
 
             @Override
@@ -551,7 +595,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
 
     private void skipToNext() {
-
+        playing=false;
         if (audioIndex == audioList.size() - 1) {
             //if last in playlist
             audioIndex = 0;
@@ -567,12 +611,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         stopMedia();
         //reset mediaPlayer
         mediaPlayer.reset();
-        MainActivity.songChanged(audioIndex);
-        initMediaPlayer();
+        if (Helper.isAppRunning(MediaPlayerService.this, "com.telitel.tiwari.mflix"))
+            {
+                MainActivity.songChanged(audioIndex);
+            }
+            initMediaPlayer();
     }
 
     private void skipToPrevious() {
 
+        playing=false;
         if (audioIndex == 0) {
             //if first in playlist
             //set index to the last of audioList
@@ -589,7 +637,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         stopMedia();
         //reset mediaPlayer
         mediaPlayer.reset();
-        MainActivity.songChanged(audioIndex);
+        if (Helper.isAppRunning(MediaPlayerService.this, "com.telitel.tiwari.mflix")) {
+
+            MainActivity.songChanged(audioIndex);
+        }
         initMediaPlayer();
     }
 
@@ -635,6 +686,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 // Previous track
                 playbackAction.setAction(ACTION_PREVIOUS);
                 return PendingIntent.getService(this, actionNumber, playbackAction, 0);
+            case 4:
+                playbackAction.setAction(ACTION_STOP);
+                return PendingIntent.getService(this, actionNumber, playbackAction, 0);
             default:
                 break;
         }
@@ -647,12 +701,20 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
         String actionString = playbackAction.getAction();
         if (actionString.equalsIgnoreCase(ACTION_PLAY)) {
+            {
+                MainActivity.player_View_layout.findViewById(R.id.play_pause_button_expanded).performClick();
+            }
             transportControls.play();
         } else if (actionString.equalsIgnoreCase(ACTION_PAUSE)) {
+            if (Helper.isAppRunning(MediaPlayerService.this, "com.telitel.tiwari.mflix")) {
+                MainActivity.player_View_layout.findViewById(R.id.play_pause_button_expanded).performClick();
+            }
             transportControls.pause();
         } else if (actionString.equalsIgnoreCase(ACTION_NEXT)) {
+            currentPos=0;
             transportControls.skipToNext();
         } else if (actionString.equalsIgnoreCase(ACTION_PREVIOUS)) {
+            currentPos=0;
             transportControls.skipToPrevious();
         } else if (actionString.equalsIgnoreCase(ACTION_STOP)) {
             transportControls.stop();
@@ -788,7 +850,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void register_playNewAudio() {
         //Register playNewMedia receiver
-        IntentFilter filter = new IntentFilter(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+        IntentFilter filter = new IntentFilter(Broadcast_PLAY_NEW_AUDIO);
         registerReceiver(playNewAudio, filter);
     }
 
@@ -877,11 +939,5 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
         mediaPlayer.prepareAsync();
     }
-
-
-
-
-
-
 
 }
