@@ -62,22 +62,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-
-
-
-
-
-
-public class MainActivity extends AppCompatActivity  implements DiscreteScrollView.OnItemChangedListener,
-        View.OnClickListener ,side_nav_toggle {
+public class MainActivity extends AppCompatActivity implements DiscreteScrollView.OnItemChangedListener,
+        View.OnClickListener, side_nav_toggle {
 
 
     private int STORAGE_PERMISSION_CODE = 1;
 
     public static DrawerLayout menuDrawer;
     private ActionBarDrawerToggle menuToggle;
-
-
 
 
     ViewPager viewPager;
@@ -87,17 +79,17 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public static InfiniteScrollAdapter infiniteAdapter;
     public static songs_recyclerView_adapter songAdapter;
 
-    public static   List<song_template> songsList;
-    public static   List<song_template> songsListFinal;
+    public static List<song_template> songsList;
+    public static List<song_template> songsListFinal;
     public static View player_View_layout;
 
 
     //Bottom Player
-     private BottomSheetBehavior mBottomSheetBehavior;
+    private BottomSheetBehavior mBottomSheetBehavior;
 
 
     //FOR LOADING SONG
-   public static   Context context;
+    public static Context context;
     ContentResolver contentResolver;
     Cursor cursor;
     Uri uri;
@@ -109,21 +101,15 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     public song_template st;
 
 
-
-
     private MediaPlayerService player;
     boolean serviceBound = true;
-
-
 
 
     public static final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
     public static final String Broadcast_PAUSE_AUDIO = " com.telitel.tiwari.mflix.PauseAudio";
 
 
-
     public static int p1;
-
 
 
     //Views
@@ -137,22 +123,15 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     ImageView repeatSongsButton_expanded;
     TextView startTimeView_expanded;
     TextView endTimeView_expanded;
-    SeekBar  songSeekBar;
+    SeekBar songSeekBar;
 
     //songSeekBar handler
     private Handler myHandler = new Handler();
 
-   public static boolean isPlaying =false;
+    public static boolean isPlaying = false;
     private double startTime = 0;
     private double finalTime = 0;
     public static int currentPos;
-
-
-
-
-
-
-
 
 
     @Override
@@ -462,122 +441,114 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                 }
             });
 
-            if(storage.loadAudio().size()>0)
+            if (storage.loadAudio().size() > 0)
                 setPlayerSongsRecyclerView(storage.loadAudio(), storage.loadAudioIndex());
 
             else
-               setPlayerSongsRecyclerView(songsList, 0);
+                setPlayerSongsRecyclerView(songsList, 0);
 
 
-        infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
-        mySongsRecyclerView.setAdapter(songAdapter);
+            infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
+            mySongsRecyclerView.setAdapter(songAdapter);
 
 
-
-        mySongsRecyclerView.setItemTransformer(new ScaleTransformer.Builder()
-                .setMaxScale(1.05f)
-                .setMinScale(0.8f)
-                .setPivotX(Pivot.X.CENTER) // CENTER is a default one
-                .setPivotY(Pivot.Y.BOTTOM) // CENTER is a default one
-                .build());
-
+            mySongsRecyclerView.setItemTransformer(new ScaleTransformer.Builder()
+                    .setMaxScale(1.05f)
+                    .setMinScale(0.8f)
+                    .setPivotX(Pivot.X.CENTER) // CENTER is a default one
+                    .setPivotY(Pivot.Y.BOTTOM) // CENTER is a default one
+                    .build());
 
 
-
-        mySongsRecyclerView.scrollToPosition(storage.loadAudioIndex());
-
+            mySongsRecyclerView.scrollToPosition(storage.loadAudioIndex());
 
 
+            initViewObjects();
+            mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View view, int i) {
 
-        initViewObjects();
-        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View view, int i) {
+                    switch (i) {
 
-                switch (i) {
+                        case BottomSheetBehavior.STATE_COLLAPSED:
+                            player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f);
+                            player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
+                            player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f);
 
-                    case BottomSheetBehavior.STATE_COLLAPSED:
-                        player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f);
-                        player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
-                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f);
+                            navigationView.setVisibility(View.VISIBLE);
+                            playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
 
-                        navigationView.setVisibility(View.VISIBLE);
-                        playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                                    if (isPlaying) {
+                                        Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                                        myHandler.postDelayed(UpdateSongTime, 100);
+                                        context.sendBroadcast(broadcastIntent);
+                                        Log.i("paused", "music ");
+                                        playPauseButton_collapsed.setImageResource(R.drawable.play_button);
+                                        playPauseButton_expanded.setImageResource(R.drawable.play_button);
+                                        isPlaying = false;
+                                    } else {
+                                        Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                                        myHandler.postDelayed(UpdateSongTime, 100);
+                                        context.sendBroadcast(broadcastIntent);
+                                        Log.i("played", "music ");
+                                        playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                                        playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                                        isPlaying = true;
+                                    }
 
-                                if(isPlaying){
-                                    Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-                                    myHandler.postDelayed(UpdateSongTime,100);
-                                    context.sendBroadcast(broadcastIntent);
-                                    Log.i("paused","music ");
-                                    playPauseButton_collapsed.setImageResource(R.drawable.play_button);
-                                    playPauseButton_expanded.setImageResource(R.drawable.play_button);
-                                    isPlaying=false;
                                 }
-                                else
-                                {
-                                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-                                    myHandler.postDelayed(UpdateSongTime,100);
-                                    context.sendBroadcast(broadcastIntent);
-                                    Log.i("played","music ");
-                                    playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
-                                    playPauseButton_expanded.setImageResource(R.drawable.pause_button);
-                                    isPlaying=true;
-                                }
+                            });
+                            break;
+                        case BottomSheetBehavior.STATE_DRAGGING:
 
-                            }
-                        });
-                        break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
+                            break;
 
-                        break;
+                        case BottomSheetBehavior.STATE_EXPANDED:
 
-                    case BottomSheetBehavior.STATE_EXPANDED:
+                            player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(0f);
+                            player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.GONE);
 
-                        player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(0f);
-                        player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.GONE);
+                            player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(0f);
+                            player_View_layout.findViewById(R.id.collapsed_player_view).setClickable(false);
+                            player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setClickable(false);
 
-                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(0f);
-                        player_View_layout.findViewById(R.id.collapsed_player_view).setClickable(false);
-                        player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setClickable(false);
+                            navigationView.setVisibility(View.GONE);
 
-                        navigationView.setVisibility(View.GONE);
+                            break;
 
-                        break;
+                        case BottomSheetBehavior.STATE_HIDDEN:
 
-                    case BottomSheetBehavior.STATE_HIDDEN:
+                            break;
 
-                        break;
+                        case BottomSheetBehavior.STATE_SETTLING:
 
-                    case BottomSheetBehavior.STATE_SETTLING:
+                            break;
 
-                        break;
 
+                    }
 
                 }
 
-            }
+
+                @Override
+                public void onSlide(@NonNull View view, float v) {
+
+                    if (v > 0.4f)
+
+                        player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
+                    player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f - v);
+                    player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f - v);
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(navigationView, "translationY", v * 80f);
+                    animation.setDuration(400);
+                    animation.start();
+                }
 
 
-            @Override
-            public void onSlide(@NonNull View view, float v) {
+            });
 
-                if (v > 0.4f)
-
-                player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
-                player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f - v);
-                player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f - v);
-                ObjectAnimator animation = ObjectAnimator.ofFloat(navigationView, "translationY", v * 80f);
-                animation.setDuration(400);
-                animation.start();
-            }
-
-
-        });
-
-    }
-
+        }
 
 
     }
@@ -597,9 +568,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //    }
 
 
-
-
-
     private void playAudio(int audioIndex) {
         //Check is service is active
         if (!serviceBound) {
@@ -614,7 +582,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         } else {
             //Store the new audioIndex to SharedPreferences
             StorageUtil storage = new StorageUtil(getApplicationContext());
-        //    storage.storeAudio(songsList);
+            //    storage.storeAudio(songsList);
             storage.storeAudioIndex(audioIndex);
 
             //Service is active
@@ -626,239 +594,224 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     }
 
 
-
-   public void initViewObjects()
-   {
+    public void initViewObjects() {
 
 
-       playPauseButton_collapsed= player_View_layout.findViewById(R.id.playpause_button_player_collapsed);
-       playPauseButton_expanded = player_View_layout.findViewById(R.id.play_pause_button_expanded);
-       playNextButton_expanded =  player_View_layout.findViewById(R.id.play_next_song_button);
-       playPreviousButton_expanded=  player_View_layout.findViewById(R.id.play_previous_song_button);
-       createPlaylistButton_expanded=  player_View_layout.findViewById(R.id.add_to_playlist_Button);
-       favouriteThisButton_expanded = player_View_layout.findViewById(R.id.favourite_this_button);
-       startTimeView_expanded =  player_View_layout.findViewById(R.id.start_time_tv);
-       endTimeView_expanded =  player_View_layout.findViewById(R.id.end_time_tv);
-       shuffleSongsButton_expanded = player_View_layout.findViewById(R.id.shuffle_songs_button);
-       repeatSongsButton_expanded = player_View_layout.findViewById(R.id.repeat_song_button);
-       songSeekBar = player_View_layout.findViewById(R.id.seekBar_song);
+        playPauseButton_collapsed = player_View_layout.findViewById(R.id.playpause_button_player_collapsed);
+        playPauseButton_expanded = player_View_layout.findViewById(R.id.play_pause_button_expanded);
+        playNextButton_expanded = player_View_layout.findViewById(R.id.play_next_song_button);
+        playPreviousButton_expanded = player_View_layout.findViewById(R.id.play_previous_song_button);
+        createPlaylistButton_expanded = player_View_layout.findViewById(R.id.add_to_playlist_Button);
+        favouriteThisButton_expanded = player_View_layout.findViewById(R.id.favourite_this_button);
+        startTimeView_expanded = player_View_layout.findViewById(R.id.start_time_tv);
+        endTimeView_expanded = player_View_layout.findViewById(R.id.end_time_tv);
+        shuffleSongsButton_expanded = player_View_layout.findViewById(R.id.shuffle_songs_button);
+        repeatSongsButton_expanded = player_View_layout.findViewById(R.id.repeat_song_button);
+        songSeekBar = player_View_layout.findViewById(R.id.seekBar_song);
 
 
+        playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (isPlaying) {
+                    if (player.mediaPlayer != null)
+                        currentPos = player.mediaPlayer.getCurrentPosition();
+                    else
+                        currentPos = 0;
+                    Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                    myHandler.postDelayed(UpdateSongTime, 100);
+                    context.sendBroadcast(broadcastIntent);
+                    Log.i("paused", "music ");
+                    playPauseButton_collapsed.setImageResource(R.drawable.play_button);
+                    playPauseButton_expanded.setImageResource(R.drawable.play_button);
+                    isPlaying = false;
+                } else {
+                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                    myHandler.postDelayed(UpdateSongTime, 100);
+                    context.sendBroadcast(broadcastIntent);
+                    Log.i("played", "music ");
+                    playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                    playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                    isPlaying = true;
+                }
+
+            }
+        });
+
+        playPauseButton_expanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (isPlaying) {
+                    if (player.mediaPlayer != null)
+                        currentPos = player.mediaPlayer.getCurrentPosition();
+                    else
+                        currentPos = 0;
+                    Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                    myHandler.postDelayed(UpdateSongTime, 100);
+                    context.sendBroadcast(broadcastIntent);
+                    Log.i("paused", "music ");
+                    playPauseButton_collapsed.setImageResource(R.drawable.play_button);
+                    playPauseButton_expanded.setImageResource(R.drawable.play_button);
+                    isPlaying = false;
+                } else {
+                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                    myHandler.postDelayed(UpdateSongTime, 100);
+                    context.sendBroadcast(broadcastIntent);
+                    Log.i("played", "music ");
+                    playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                    playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                    isPlaying = true;
+                }
+
+            }
+        });
+
+        playNextButton_expanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                StorageUtil storage = new StorageUtil(context.getApplicationContext());
+
+                if (storage.loadAudioIndex() + 1 >= storage.loadAudio().size()) {
+                    storage.storeAudioIndex(0);
+                } else {
+                    storage.storeAudioIndex(storage.loadAudioIndex() + 1);
+                }
+                songChanged(storage.loadAudioIndex());
+                currentPos = 0;
+                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                context.sendBroadcast(broadcastIntent);
+                mySongsRecyclerView.smoothScrollToPosition(storage.loadAudioIndex());
+
+            }
+        });
+
+        playPreviousButton_expanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                StorageUtil storage = new StorageUtil(context.getApplicationContext());
+                if (storage.loadAudioIndex() - 1 <= 0) {
+                    storage.storeAudioIndex(storage.loadAudio().size() - 1);
+                } else {
+                    storage.storeAudioIndex(storage.loadAudioIndex() - 1);
+                }
+                songChanged(storage.loadAudioIndex());
+                currentPos = 0;
+                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                context.sendBroadcast(broadcastIntent);
+
+            }
+        });
+
+        createPlaylistButton_expanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                StorageUtil storage = new StorageUtil(context.getApplicationContext());
+                song_template favourite_song = storage.loadAudio().get(storage.loadAudioIndex());
+
+                song_template s = new song_template();
+                s.setSongId(favourite_song.getSongId());
+                s.setSongTitle(favourite_song.getSongTitle());
+                s.setSongArtist(favourite_song.getSongArtist());
+                s.setSongGener(favourite_song.getSongGener());
+                s.setSongAlbumId(favourite_song.getSongAlbumId());
+                s.setSongAlbum(favourite_song.getSongAlbum());
+                s.setSongPath(favourite_song.getSongPath());
+                s.setSongAlbumArtPath(favourite_song.getSongAlbumArtPath());
+                s.setSongArtPath(favourite_song.getSongArtPath());
+                s.setIsFavourite(favourite_song.getIsFavourite());
+
+                addToPLaylist(s);
+
+            }
+        });
+
+        favouriteThisButton_expanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StorageUtil storage = new StorageUtil(context.getApplicationContext());
+                song_template favourite_song = storage.loadAudio().get(storage.loadAudioIndex());
+
+                song_template s = new song_template();
+                s.setSongId(favourite_song.getSongId());
+                s.setSongTitle(favourite_song.getSongTitle());
+                s.setSongArtist(favourite_song.getSongArtist());
+                s.setSongGener(favourite_song.getSongGener());
+                s.setSongAlbumId(favourite_song.getSongAlbumId());
+                s.setSongAlbum(favourite_song.getSongAlbum());
+                s.setSongPath(favourite_song.getSongPath());
+                s.setSongAlbumArtPath(favourite_song.getSongAlbumArtPath());
+                s.setSongArtPath(favourite_song.getSongArtPath());
+                s.setIsFavourite(favourite_song.getIsFavourite());
+
+                database_helper.addThisToFavourites(s, songs_database);
+                if (fragment_favourite.songAdapter != null) {
+                    fragment_favourite.songsList.add(s);
+                    fragment_favourite.songAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        shuffleSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+                context.sendBroadcast(broadcastIntent);
+                Collections.shuffle(songsList);
+                StorageUtil storage = new StorageUtil(context.getApplicationContext());
+                storage.clearCachedAudioPlaylist();
+                storage.storeAudio(songsList);
+                storage.storeAudioIndex(0);
+                songAdapter = new songs_recyclerView_adapter(context, songsList, 3);
+                infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
+                mySongsRecyclerView.setAdapter(songAdapter);
+                //  mySongsRecyclerView.scrollToPosition(0);
+                broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+                context.sendBroadcast(broadcastIntent);
+                myHandler.postDelayed(UpdateSongTime, 100);
+
+                Log.i("played", "music ");
 
 
+            }
+        });
+
+        repeatSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        songSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
 
-       playPauseButton_collapsed.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
+            int seek = 0;
 
-               if(isPlaying){
-                   if(player.mediaPlayer!=null)
-                       currentPos=player.mediaPlayer.getCurrentPosition();
-                   else
-                       currentPos=0;
-                   Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-                   myHandler.postDelayed(UpdateSongTime,100);
-                   context.sendBroadcast(broadcastIntent);
-                   Log.i("paused","music ");
-                   playPauseButton_collapsed.setImageResource(R.drawable.play_button);
-                   playPauseButton_expanded.setImageResource(R.drawable.play_button);
-                   isPlaying=false;
-               }
-               else
-               {
-                   Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-                   myHandler.postDelayed(UpdateSongTime,100);
-                   context.sendBroadcast(broadcastIntent);
-                   Log.i("played","music ");
-                   playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
-                   playPauseButton_expanded.setImageResource(R.drawable.pause_button);
-                   isPlaying=true;
-               }
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
 
-           }
-       });
+                seek = i;
+            }
 
-       playPauseButton_expanded.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
-               if(isPlaying){
-                   if(player.mediaPlayer!=null)
-                   currentPos=player.mediaPlayer.getCurrentPosition();
-                   else
-                    currentPos=0;
-                   Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-                   myHandler.postDelayed(UpdateSongTime,100);
-                   context.sendBroadcast(broadcastIntent);
-                   Log.i("paused","music ");
-                   playPauseButton_collapsed.setImageResource(R.drawable.play_button);
-                   playPauseButton_expanded.setImageResource(R.drawable.play_button);
-                   isPlaying=false;
-               }
-               else
-               {
-                   Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-                   myHandler.postDelayed(UpdateSongTime,100);
-                   context.sendBroadcast(broadcastIntent);
-                   Log.i("played","music ");
-                   playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
-                   playPauseButton_expanded.setImageResource(R.drawable.pause_button);
-                   isPlaying=true;
-               }
+            }
 
-           }
-       });
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                player.mediaPlayer.seekTo((int) seek);
+                songSeekBar.setProgress((int) seek);
+            }
 
-       playNextButton_expanded.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
+        });
 
-               StorageUtil storage = new StorageUtil(context.getApplicationContext());
-
-               if(storage.loadAudioIndex()+1>=storage.loadAudio().size()){
-                   storage.storeAudioIndex(0);
-               }
-               else
-               {
-                   storage.storeAudioIndex(storage.loadAudioIndex()+1);
-               }
-               songChanged(storage.loadAudioIndex());
-               currentPos=0;
-               Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-               context.sendBroadcast(broadcastIntent);
-               mySongsRecyclerView.smoothScrollToPosition(storage.loadAudioIndex());
-
-           }
-       });
-
-       playPreviousButton_expanded.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-
-               StorageUtil storage = new StorageUtil(context.getApplicationContext());
-               if(storage.loadAudioIndex()-1<=0){
-                   storage.storeAudioIndex(storage.loadAudio().size()-1);
-               }
-               else
-               {
-                   storage.storeAudioIndex(storage.loadAudioIndex()-1);
-               }
-               songChanged(storage.loadAudioIndex());
-               currentPos=0;
-               Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-               context.sendBroadcast(broadcastIntent);
-
-           }
-       });
-
-       createPlaylistButton_expanded.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-
-               StorageUtil storage = new StorageUtil(context.getApplicationContext());
-               song_template favourite_song=storage.loadAudio().get(storage.loadAudioIndex());
-
-               song_template s=new song_template();
-                       s.setSongId(favourite_song.getSongId());
-                       s.setSongTitle(favourite_song.getSongTitle());
-                       s.setSongArtist(favourite_song.getSongArtist());
-                       s.setSongGener(favourite_song.getSongGener());
-               s.setSongAlbumId(favourite_song.getSongAlbumId());
-                       s.setSongAlbum(favourite_song.getSongAlbum());
-                       s.setSongPath(favourite_song.getSongPath());
-                       s.setSongAlbumArtPath(favourite_song.getSongAlbumArtPath());
-                       s.setSongArtPath(favourite_song.getSongArtPath());
-                       s.setIsFavourite(favourite_song.getIsFavourite());
-
-                       addToPLaylist(s);
-
-           }
-       });
-
-       favouriteThisButton_expanded.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               StorageUtil storage = new StorageUtil(context.getApplicationContext());
-               song_template favourite_song=storage.loadAudio().get(storage.loadAudioIndex());
-
-               song_template s=new song_template();
-               s.setSongId(favourite_song.getSongId());
-               s.setSongTitle(favourite_song.getSongTitle());
-               s.setSongArtist(favourite_song.getSongArtist());
-               s.setSongGener(favourite_song.getSongGener());
-               s.setSongAlbumId(favourite_song.getSongAlbumId());
-               s.setSongAlbum(favourite_song.getSongAlbum());
-               s.setSongPath(favourite_song.getSongPath());
-               s.setSongAlbumArtPath(favourite_song.getSongAlbumArtPath());
-               s.setSongArtPath(favourite_song.getSongArtPath());
-               s.setIsFavourite(favourite_song.getIsFavourite());
-
-               database_helper.addThisToFavourites(s,songs_database);
-               if(fragment_favourite.songAdapter!=null) {
-                   fragment_favourite.songsList.add(s);
-                   fragment_favourite.songAdapter.notifyDataSetChanged();
-               }
-           }
-       });
-
-       shuffleSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-               context.sendBroadcast(broadcastIntent);
-               Collections.shuffle(songsList);
-               StorageUtil storage = new StorageUtil(context.getApplicationContext());
-               storage.clearCachedAudioPlaylist();
-               storage.storeAudio(songsList);
-               storage.storeAudioIndex(0);
-               songAdapter = new songs_recyclerView_adapter(context , songsList, 3);
-               infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
-               mySongsRecyclerView.setAdapter(songAdapter);
-               //  mySongsRecyclerView.scrollToPosition(0);
-               broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-               context.sendBroadcast(broadcastIntent);
-               myHandler.postDelayed(UpdateSongTime,100);
-
-               Log.i("played","music ");
-
-
-           }
-       });
-
-       repeatSongsButton_expanded.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-
-           }
-       });
-
-       songSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-
-
-           int seek=0;
-
-           @Override
-           public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
-               seek=i;
-           }
-
-           @Override
-           public void onStartTrackingTouch(SeekBar seekBar) {
-
-           }
-
-           @Override
-           public void onStopTrackingTouch(SeekBar seekBar) {
-               player.mediaPlayer.seekTo((int) seek);
-               songSeekBar.setProgress((int)seek);
-           }
-
-       });
-
-   }
+    }
 
 
     private Runnable UpdateSongTime = new Runnable() {
@@ -867,7 +820,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             startTime = player.mediaPlayer.getCurrentPosition();
             finalTime = player.mediaPlayer.getDuration();
 
-            songSeekBar.setMax((int)finalTime);
+            songSeekBar.setMax((int) finalTime);
             songSeekBar.setProgress((int) startTime);
 
             startTimeView_expanded.setText(String.format("%d: %ds",
@@ -891,7 +844,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     };
 
 
-
     @Override
     public void onClick(View v) {
 
@@ -908,46 +860,43 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //
 //        if(adapterPosition>0)
         songChanged(adapterPosition);
-        currentPos=0;
-      //  playAudio(storage.loadAudioIndex());
+        currentPos = 0;
+        //  playAudio(storage.loadAudioIndex());
 
     }
 
 
-
-
-
-    public static void songChanged(int position){
+    public static void songChanged(int position) {
 
         StorageUtil storage = new StorageUtil(context.getApplicationContext());
         storage.storeAudioIndex(position);
-        ImageView iv=MainActivity.player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_art_player_collapsed);
-        TextView tv= MainActivity.player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_title_player_collapsed);
+        ImageView iv = MainActivity.player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_art_player_collapsed);
+        TextView tv = MainActivity.player_View_layout.findViewById(R.id.collapsed_player_view).findViewById(R.id.song_title_player_collapsed);
         iv.setImageURI(Uri.parse(storage.loadAudio().get(storage.loadAudioIndex()).getSongArtPath()));
         tv.setText(storage.loadAudio().get(storage.loadAudioIndex()).getSongTitle());
         mySongsRecyclerView.scrollToPosition(position);
 
 
-      // playAudio(0);
+        // playAudio(0);
 
     }
 
 
-    public static void setPlayerSongsRecyclerView( List<song_template> songsList2,int position){
+    public static void setPlayerSongsRecyclerView(List<song_template> songsList2, int position) {
 
 
-       // songsList=songsList2;
-       // p1=p2;
-       // Log.i("in final position ---is",Integer.toString(p1));
+        // songsList=songsList2;
+        // p1=p2;
+        // Log.i("in final position ---is",Integer.toString(p1));
 
         //StorageUtil storage = new StorageUtil(context.getApplicationContext());
-       // storage.storeAudioIndex(p1);
+        // storage.storeAudioIndex(p1);
 //        songAdapter = new songs_recyclerView_adapter(context , songsList2, 3);
 //        infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
 //        mySongsRecyclerView.setAdapter(songAdapter);
 //        mySongsRecyclerView.scrollToPosition(position);
 
-        songAdapter = new songs_recyclerView_adapter(context , songsList2, 3);
+        songAdapter = new songs_recyclerView_adapter(context, songsList2, 3);
         infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
         mySongsRecyclerView.setAdapter(songAdapter);
         mySongsRecyclerView.scrollToPosition(position);
@@ -955,20 +904,16 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
         context.sendBroadcast(broadcastIntent);
         songChanged(position);
-        if(!isPlaying)
-        player_View_layout.findViewById(R.id.play_pause_button_expanded).callOnClick();
+        if (!isPlaying)
+            player_View_layout.findViewById(R.id.play_pause_button_expanded).callOnClick();
 
     }
-
-
-
 
 
     @Override
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         return menuToggle.onOptionsItemSelected(item);
     }
-
 
 
 //    private String playSong2(Context context, int song_index){
@@ -979,21 +924,20 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 //    }
 
 
+    private String getSongGenre(Context context, long song_id) {
 
- private String getSongGenre(Context context,long song_id){
+        MediaMetadataRetriever mr = new MediaMetadataRetriever();
 
-     MediaMetadataRetriever mr = new MediaMetadataRetriever();
+        Uri trackUri = ContentUris.withAppendedId(
+                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song_id);
 
-     Uri trackUri = ContentUris.withAppendedId(
-             android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,song_id);
+        mr.setDataSource(context, trackUri);
 
-     mr.setDataSource(context, trackUri);
-
-     String songGenre = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+        String songGenre = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
 
 
-     return songGenre;
- }
+        return songGenre;
+    }
 
 
     private String getAlbumArtPath(Context context, long androidAlbumId) {
@@ -1019,20 +963,19 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         String path = null;
         Cursor c = context.getContentResolver().query(
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART},
+                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                 MediaStore.Audio.Albums._ID + "=?",
                 new String[]{Long.toString(androidAlbumId)},
                 null);
         if (c != null) {
             if (c.moveToFirst()) {
                 path = c.getString(c.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-              //  Log.i("artPath",path);
+                //  Log.i("artPath",path);
             }
             c.close();
         }
         return path;
     }
-
 
 
     //GET ALBUM NAME IT BELONGS TO IF ANY
@@ -1055,15 +998,15 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     }
 
 
-    public static void setupFm(FragmentManager fragmentManager, ViewPager viewPager){
+    public static void setupFm(FragmentManager fragmentManager, ViewPager viewPager) {
 
         fragment_pager_adapter Adapter = new fragment_pager_adapter(fragmentManager);
 
-        Adapter.add(new homePage(),"Home");
-        Adapter.add(new playlistPage(),"Playlist");
-        Adapter.add(new favouritePage(),"Favourite");
-        Adapter.add(new searchPage(),"Search");
-        Adapter.add(new toolsPage(),"Tools");
+        Adapter.add(new homePage(), "Home");
+        Adapter.add(new playlistPage(), "Playlist");
+        Adapter.add(new favouritePage(), "Favourite");
+        Adapter.add(new searchPage(), "Search");
+        Adapter.add(new toolsPage(), "Tools");
 
 
         viewPager.setAdapter(Adapter);
@@ -1071,31 +1014,30 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     }
 
 
-    void addToPLaylist(song_template s){
+    void addToPLaylist(song_template s) {
 
 
-        st=s;
+        st = s;
         ImageView createNewPlayList;
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View promptView = layoutInflater.inflate(R.layout.select_playlist_popup, null);
 
         final RecyclerView myPlaylistsSongRecyclerView;
         final AlertDialog alertD = new AlertDialog.Builder(this).create();
-        final List<song_template> listOfPlayLists=new ArrayList<>();
+        final List<song_template> listOfPlayLists = new ArrayList<>();
 
         _songs_database_helper = new database_helper(getApplicationContext());
         songs_database = _songs_database_helper.getWritableDatabase();
 
-        createNewPlayList=promptView.findViewById(R.id.createPlaylistButtonPopup);
-        myPlaylistsSongRecyclerView= promptView.findViewById(R.id.selectPlaylistRecyclerView);
+        createNewPlayList = promptView.findViewById(R.id.createPlaylistButtonPopup);
+        myPlaylistsSongRecyclerView = promptView.findViewById(R.id.selectPlaylistRecyclerView);
 
-        final songs_recyclerView_adapter playListsAdapter = new songs_recyclerView_adapter(getApplicationContext(), listOfPlayLists,4);
+        final songs_recyclerView_adapter playListsAdapter = new songs_recyclerView_adapter(getApplicationContext(), listOfPlayLists, 4);
         myPlaylistsSongRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         myPlaylistsSongRecyclerView.setAdapter(playListsAdapter);
 
 
-
-        Cursor songs_cursor2 = songs_database.rawQuery("SELECT * FROM _playlists_tb ",new String[]{});
+        Cursor songs_cursor2 = songs_database.rawQuery("SELECT * FROM _playlists_tb ", new String[]{});
         if (songs_cursor2 != null) {
             if (songs_cursor2.moveToFirst()) {
                 do {
@@ -1103,7 +1045,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
                     //   Log.i("+++++++++++++++++", songs_cursor2.getString(0) + "----" + songs_cursor2.getString(1));
 
 
-                    song_template song = new song_template(0L,songs_cursor2.getString(songs_cursor2.getColumnIndex("_playlist_name_")),""," "," ",0L," "," "," ","","");
+                    song_template song = new song_template(0L, songs_cursor2.getString(songs_cursor2.getColumnIndex("_playlist_name_")), "", " ", " ", 0L, " ", " ", " ", "", "");
                     listOfPlayLists.add(song);
 
                 } while (songs_cursor2.moveToNext());
@@ -1112,7 +1054,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             songs_cursor2.close();
 
         }
-
 
 
         createNewPlayList.setOnClickListener(new View.OnClickListener() {
@@ -1126,7 +1067,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         playListsAdapter.setOnItemClickListener(new songs_recyclerView_adapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                database_helper.addThisToPlaylist(listOfPlayLists.get(position).getSongTitle(),st,songs_database);
+                database_helper.addThisToPlaylist(listOfPlayLists.get(position).getSongTitle(), st, songs_database);
                 alertD.dismiss();
                 playListsAdapter.notifyDataSetChanged();
             }
@@ -1138,7 +1079,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     }
 
 
-    public  void getPlayList(){
+    public void getPlayList() {
 
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View promptView = layoutInflater.inflate(R.layout.create_playlist_name_popup, null);
@@ -1154,14 +1095,14 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             public void onClick(View v) {
                 // btnAdd1 has been clicked
 
-                boolean success= database_helper.createPlayList(songs_database,userInput.getText().toString());
-                if(success)
-                    Toast.makeText(context,"Created Playlist",Toast.LENGTH_SHORT);
+                boolean success = database_helper.createPlayList(songs_database, userInput.getText().toString());
+                if (success)
+                    Toast.makeText(context, "Created Playlist", Toast.LENGTH_SHORT);
                 else
-                    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT);
-                database_helper.addThisToPlaylist(userInput.getText().toString(),st,songs_database);
-                if(fragment_playlists.songAdapter!=null) {
-                    song_template newSt=new song_template(0L,userInput.getText().toString(),""," "," ",0L," "," "," ","","");
+                    Toast.makeText(context, "Failed", Toast.LENGTH_SHORT);
+                database_helper.addThisToPlaylist(userInput.getText().toString(), st, songs_database);
+                if (fragment_playlists.songAdapter != null) {
+                    song_template newSt = new song_template(0L, userInput.getText().toString(), "", " ", " ", 0L, " ", " ", " ", "", "");
                     fragment_playlists.playListsList.add(newSt);
                     fragment_playlists.songAdapter.notifyDataSetChanged();
                 }
@@ -1183,10 +1124,6 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         alertD.show();
 
     }
-
-
-
-
 
 
     private ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -1221,13 +1158,12 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
 
         }
     };
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener(){
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-            switch (menuItem.getItemId())
-            {
+            switch (menuItem.getItemId()) {
                 case R.id.nav_home:
                     viewPager.setCurrentItem(0);
                     return true;
@@ -1263,7 +1199,7 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     @Override
     public void onBackPressed() {
 
-        if(mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED)
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         else
             super.onBackPressed();
@@ -1307,58 +1243,16 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT);
 
-                Intent i = new Intent(this,MainActivity.class);
+                Intent i = new Intent(this, MainActivity.class);
                 MainActivity.this.finish();
                 startActivity(i);
 
-                } else {
+            } else {
                 MainActivity.this.finish();
             }
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     //Binding this Client to the AudioPlayer Service
@@ -1380,20 +1274,13 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
     };
 
 
-
-
-
-
-
-
-
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean("ServiceState", serviceBound);
         StorageUtil storage = new StorageUtil(getApplicationContext());
-        savedInstanceState.putInt("pos",storage.loadAudioIndex());
-        savedInstanceState.putInt("seekpos",currentPos);
-       // savedInstanceState.putBoolean("isPlaying", isPlaying);
+        savedInstanceState.putInt("pos", storage.loadAudioIndex());
+        savedInstanceState.putInt("seekpos", currentPos);
+        // savedInstanceState.putBoolean("isPlaying", isPlaying);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -1403,9 +1290,9 @@ public class MainActivity extends AppCompatActivity  implements DiscreteScrollVi
         serviceBound = savedInstanceState.getBoolean("ServiceState");
         StorageUtil storage = new StorageUtil(getApplicationContext());
 
-        storage.storeAudioIndex( savedInstanceState.getInt("pos"));
-        currentPos=savedInstanceState.getInt("seekpos");
-       // isPlaying = savedInstanceState.getBoolean("isPlaying");
+        storage.storeAudioIndex(savedInstanceState.getInt("pos"));
+        currentPos = savedInstanceState.getInt("seekpos");
+        // isPlaying = savedInstanceState.getBoolean("isPlaying");
     }
 
     @Override

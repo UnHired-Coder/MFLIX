@@ -1,24 +1,24 @@
 package com.telitel.tiwari.mflix;
 
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.telitel.tiwari.mflix.searchVideos.SearchVideosList;
+import com.telitel.tiwari.mflix.videoDetails.VideosList;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -31,46 +31,9 @@ import java.util.concurrent.ExecutionException;
 public class searchPage extends Fragment {
 
 
-    public class DownloadTask extends AsyncTask<String , Void, String> {
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            String result= "";
-            URL url;
-            HttpURLConnection urlConnection=null;
-            try {
-
-
-                url = new URL(urls[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-
-                InputStream in =urlConnection.getInputStream();
-
-                InputStreamReader reader= new InputStreamReader(in);
-
-                int data = reader.read();
-
-                while (data!= -1){
-
-                    char current=(char) data;
-                    result += current;
-                    data= reader.read();
-                }
-
-                return result;
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
-
+    private TextView textView;
+    private RecyclerView myVideosRecyclerView;
+    SearchVideosList sv;
     public searchPage() {
         // Required empty public constructor
     }
@@ -81,49 +44,68 @@ public class searchPage extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_search_page, container, false);
+        myVideosRecyclerView = (RecyclerView) v.findViewById(R.id.recomended_videos_recyclerView);
+
+        getData();
+        getSearchData();
+
 
 
         return v;
     }
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
-        DownloadTask task =new DownloadTask();
-        String result= null;
-        try {
-            result=task.execute("https://www.googleapis.com/youtube/v3/search?q=abhay%20maura&key=AIzaSyCKAP7Y-RMjj3C4quc1pknoMjmYaw8lR5k&part=snippet&maxResults=5").get();
+    }
 
+    private void getData()
+    {
+        retrofit2.Call<VideosList> videosListCall = youtubeDataApi.getVideoService().getVideos();
+        videosListCall.enqueue(new Callback<VideosList>() {
+            @Override
+            public void onResponse(Call<VideosList> call, Response<VideosList> response) {
+                VideosList v = response.body();
+                Toast.makeText(getContext(),"success",Toast.LENGTH_LONG).show();
 
-        }
-        catch (InterruptedException e){
-            e.printStackTrace();
-        }
-        catch (ExecutionException e){
-            e.printStackTrace();
-        }
+            }
 
+            @Override
+            public void onFailure(Call<VideosList> call, Throwable t) {
 
-        try {
-            JSONObject jsonObject= new JSONObject(result);
-            String weatherInfo =jsonObject.getString("items");
-            Log.i("DATA",weatherInfo);
+                Toast.makeText(getContext(),"failed",Toast.LENGTH_LONG).show();
 
-//            JSONArray arr = new JSONArray(weatherInfo);
-//            for(int i=0;i<arr.length();i++){
-//
-//                JSONObject jsonPart =arr.getJSONObject(i);
-//                Log.i("----------",jsonPart.getString("main"));
-//                Log.i("==========",jsonPart.getString("description"));
-//            }
+            }
+        });
 
+    }
 
+    private void getSearchData()
+    {
+        retrofit2.Call<SearchVideosList> searchVideosListCall = youtubeDataApi.getVideoSearchService().getSearchVideos();
+        searchVideosListCall.enqueue(new Callback<SearchVideosList>() {
+            @Override
+            public void onResponse(Call<SearchVideosList> call, Response<SearchVideosList> response) {
+                 sv = response.body();
+                Toast.makeText(getContext(),"success",Toast.LENGTH_LONG).show();
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+                videos_recyclerView_adapter videosAdapter = new videos_recyclerView_adapter(getContext(), sv,1);
+                myVideosRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+                myVideosRecyclerView.setAdapter(videosAdapter);
+
+            }
+
+            @Override
+            public void onFailure(Call<SearchVideosList> call, Throwable t) {
+                Toast.makeText(getContext(),"failed",Toast.LENGTH_LONG).show();
+                Log.i("error",t.getMessage());
+
+            }
+        });
 
     }
 }
