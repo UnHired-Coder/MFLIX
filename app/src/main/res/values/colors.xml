@@ -7,7 +7,7 @@
     <color name="navItemChecked">#FC0404</color>
     <color name="navItemUnChecked">#FDFDFD</color>
     <color name="colorNotificationBar">#000000</color>
-    <color name="textColorWhite">#FFFFFF</color>
+    <color name="textColorWhite">#FCFCFC</color>
     <color name="textColorGrey">#547A7A</color>
     <color name="textColorBlack">#000000</color>
     <color name="sideMenuIconColor">#000000</color>

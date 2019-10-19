@@ -7,6 +7,8 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public class youtubeDataApi {
 
@@ -58,8 +60,8 @@ public class youtubeDataApi {
 
     public interface VideoSearchService {
 
-        @GET("search?q=car&type=video&fields=items(id(videoId),snippet(channelId,title,channelTitle,thumbnails(medium(url))))&maxResults=20&part=snippet&key=" + key)
-        Call<SearchVideosList> getSearchVideos();
+        @GET("search?type=video&fields=items(id(videoId),snippet(channelId,title,channelTitle,thumbnails(medium(url))))&maxResults=20&part=snippet&key=" + key)
+        Call<SearchVideosList> getSearchVideos(@Query("q")String query_str);
 
     }
 

@@ -102,14 +102,14 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 
 
     private MediaPlayerService player;
-    boolean serviceBound = true;
+    boolean serviceBound = false;
 
 
     public static final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
     public static final String Broadcast_PAUSE_AUDIO = " com.telitel.tiwari.mflix.PauseAudio";
 
 
-    public static int p1;
+
 
 
     //Views
@@ -383,14 +383,11 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
             }
 
 
-            StorageUtil storage = new StorageUtil(getApplicationContext());
-
             Intent playerIntent = new Intent(this, MediaPlayerService.class);
             startService(playerIntent);
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
-            Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-            context.sendBroadcast(broadcastIntent);
+            Log.i("song--- :   ", "1");
 
 //        if(storage.loadAudio()==null)
 //        storage.storeAudio(songsList);
@@ -417,7 +414,6 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
             mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
             mySongsRecyclerView.addOnItemChangedListener(this);
 
-
             mySongsRecyclerView.addScrollStateChangeListener(new DiscreteScrollView.ScrollStateChangeListener<RecyclerView.ViewHolder>() {
                 @Override
                 public void onScrollStart(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
@@ -441,13 +437,20 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
                 }
             });
 
-            if (storage.loadAudio().size() > 0)
-                setPlayerSongsRecyclerView(storage.loadAudio(), storage.loadAudioIndex());
 
-            else
+            StorageUtil storage = new StorageUtil(getApplicationContext());
+            if (storage.loadAudio() != null) {
+                if (storage.loadAudio().size() > 0)
+                    setPlayerSongsRecyclerView(storage.loadAudio(), storage.loadAudioIndex());
+
+                else
+                    setPlayerSongsRecyclerView(songsList, 0);
+            } else {
+                storage.storeAudio(songsList);
                 setPlayerSongsRecyclerView(songsList, 0);
 
-
+            }
+            Log.i("song--- :   ", "2");
             infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
             mySongsRecyclerView.setAdapter(songAdapter);
 
@@ -461,7 +464,16 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 
 
             mySongsRecyclerView.scrollToPosition(storage.loadAudioIndex());
+            MediaPlayerService.playing=false;
+            Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+            context.sendBroadcast(broadcastIntent);
 
+            if(MediaPlayerService.playing)
+            {
+                playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
+                playPauseButton_expanded.setImageResource(R.drawable.pause_button);
+                isPlaying = true;
+            }
 
             initViewObjects();
             mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -568,30 +580,30 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 //    }
 
 
-    private void playAudio(int audioIndex) {
-        //Check is service is active
-        if (!serviceBound) {
-            //Store Serializable audioList to SharedPreferences
-            StorageUtil storage = new StorageUtil(getApplicationContext());
-            storage.storeAudio(songsList);
-            storage.storeAudioIndex(audioIndex);
-
-            Intent playerIntent = new Intent(this, MediaPlayerService.class);
-            startService(playerIntent);
-            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            //Store the new audioIndex to SharedPreferences
-            StorageUtil storage = new StorageUtil(getApplicationContext());
-            //    storage.storeAudio(songsList);
-            storage.storeAudioIndex(audioIndex);
-
-            //Service is active
-            //Send a broadcast to the service -> PLAY_NEW_AUDIO
-            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            sendBroadcast(broadcastIntent);
-
-        }
-    }
+//    private void playAudio(int audioIndex) {
+//        //Check is service is active
+//        if (!serviceBound) {
+//            //Store Serializable audioList to SharedPreferences
+//            StorageUtil storage = new StorageUtil(getApplicationContext());
+//            storage.storeAudio(songsList);
+//            storage.storeAudioIndex(audioIndex);
+//
+//            Intent playerIntent = new Intent(this, MediaPlayerService.class);
+//            startService(playerIntent);
+//            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+//        } else {
+//            //Store the new audioIndex to SharedPreferences
+//            StorageUtil storage = new StorageUtil(getApplicationContext());
+//            //    storage.storeAudio(songsList);
+//            storage.storeAudioIndex(audioIndex);
+//
+//            //Service is active
+//            //Send a broadcast to the service -> PLAY_NEW_AUDIO
+//            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+//            sendBroadcast(broadcastIntent);
+//
+//        }
+//    }
 
 
     public void initViewObjects() {
@@ -1166,18 +1178,28 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
             switch (menuItem.getItemId()) {
                 case R.id.nav_home:
                     viewPager.setCurrentItem(0);
+                    player_View_layout.setVisibility(View.VISIBLE);
+
                     return true;
                 case R.id.nav_playlist:
                     viewPager.setCurrentItem(1);
+                    player_View_layout.setVisibility(View.VISIBLE);
+
                     return true;
                 case R.id.nav_favourite:
                     viewPager.setCurrentItem(2);
+                    player_View_layout.setVisibility(View.VISIBLE);
+
                     return true;
                 case R.id.nav_search:
                     viewPager.setCurrentItem(3);
+                    player_View_layout.setVisibility(View.GONE);
+
                     return true;
                 case R.id.nav_tools:
                     viewPager.setCurrentItem(4);
+                    player_View_layout.setVisibility(View.GONE);
+
                     return true;
 
             }
@@ -1302,11 +1324,9 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
         if (serviceBound) {
             unbindService(serviceConnection);
 //            //service is active
-//            player.stopSelf();
         }
+
     }
-
-
     @Override
     public void setDrawerEnabled(boolean enabled) {
         int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :

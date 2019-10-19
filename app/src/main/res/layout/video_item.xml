@@ -20,6 +20,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:transitionName="thumbnail_to_video"
             app:srcCompat="@drawable/sample_avatar" />
 
         <TextView
@@ -33,7 +34,7 @@
             android:layout_marginRight="5dp"
             android:maxLines="2"
             android:text="In Depth Tour Suzuki Futura Carry 1.5 GX (2011) - Indonesia"
-            android:textColor="@color/textColorWhite"
+            android:textColor="#276679"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/video_thumbnail"
             app:layout_constraintTop_toTopOf="parent" />
@@ -47,7 +48,7 @@
             android:layout_marginEnd="150dp"
             android:layout_marginRight="150dp"
             android:text="B Channel"
-            android:textColor="@color/textColorWhite"
+            android:textColor="#B44D4D"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/video_thumbnail"
             app:layout_constraintTop_toBottomOf="@+id/video_title_list" />

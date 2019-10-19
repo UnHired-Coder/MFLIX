@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -26,12 +25,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
-
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static com.telitel.tiwari.mflix.App_start.CHANNEL_1_ID;
 import static com.telitel.tiwari.mflix.MainActivity.Broadcast_PLAY_NEW_AUDIO;
 import static com.telitel.tiwari.mflix.MainActivity.currentPos;
 
@@ -43,7 +38,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
 
 
-    private boolean playing=false;
+    public static boolean playing=false;
 
     public MediaPlayer mediaPlayer;
 
