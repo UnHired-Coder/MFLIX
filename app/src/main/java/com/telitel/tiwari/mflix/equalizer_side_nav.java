@@ -34,7 +34,7 @@ public class equalizer_side_nav extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_equalizer_side_nav, container, false);
-
+        ((side_nav_toggle) getActivity()).setDrawerEnabled(false);
 
         GraphView graph = (GraphView) v.findViewById(R.id.graph);
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+import android.util.Log;
 
 public class App_start extends Application {
 
@@ -37,4 +38,6 @@ public class App_start extends Application {
         }
 
     }
+
+
 }

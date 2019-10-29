@@ -71,6 +71,7 @@ public class fragment_songs_list extends Fragment {
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(songsList);
                 storage.storeAudioIndex(position);
+                storage.storeAudioPosition(0);
                 // MainActivity.playAudio(0);
                 //Service is active
                 //Send a broadcast to the service -> PLAY_NEW_AUDIO

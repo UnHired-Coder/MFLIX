@@ -37,46 +37,46 @@ public class player_view extends BottomSheetDialogFragment{
         View v= inflater.inflate(R.layout.activity_player_view,container,false);
 
 
-        mySongsRecyclerView = v.findViewById(R.id.songs_recyclerView_2);
-        songAdapter = new songs_recyclerView_adapter(getContext(), songsList, 3);
-        mySongsRecyclerView.setAdapter(songAdapter);
+//        mySongsRecyclerView = v.findViewById(R.id.songs_recyclerView_2);
+//        songAdapter = new songs_recyclerView_adapter(getContext(), songsList, 3);
+//        mySongsRecyclerView.setAdapter(songAdapter);
+//
+//        songsList = new ArrayList<>();
+//
+//
+//        song_template song = new song_template(0L,"",""," "," ",0L," "," ","No","","");
+//
 
-        songsList = new ArrayList<>();
-
-
-        song_template song = new song_template(0L,"",""," "," ",0L," "," ","No","","");
-
-
-       Log.i("Inside----------","this");
-
-
+       Log.i("Player view ","Created");
 
 
 
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
-        songsList.add(song);
+
+//
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
+//        songsList.add(song);
 
 
 

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -73,8 +74,6 @@ public class splash_screen extends AppCompatActivity {
             }
         }
     }
-
-
 
 
 }

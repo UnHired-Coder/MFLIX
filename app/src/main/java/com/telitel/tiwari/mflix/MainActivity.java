@@ -14,12 +14,10 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,8 +27,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -102,14 +98,11 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 
 
     private MediaPlayerService player;
-    boolean serviceBound = false;
+    boolean serviceBound ;
 
 
     public static final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
     public static final String Broadcast_PAUSE_AUDIO = " com.telitel.tiwari.mflix.PauseAudio";
-
-
-
 
 
     //Views
@@ -137,14 +130,6 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        //Screen Orientation
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        //ToolBar Setup
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
 
         //Check and request for permission
@@ -156,7 +141,14 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 
         //Proceed to this only if the permission is granted
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            setContentView(R.layout.activity_main);
 
+            //Screen Orientation
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+            //ToolBar Setup
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
             //SIDE NAVIGATION DRAWER
             menuDrawer = (DrawerLayout) findViewById(R.id.side_nav_drawer);
@@ -382,20 +374,20 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
                 cursor.close();
             }
 
-
-            Intent playerIntent = new Intent(this, MediaPlayerService.class);
-            startService(playerIntent);
-            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-
+            if (!serviceBound) {
+                Intent playerIntent = new Intent(getApplicationContext(), MediaPlayerService.class);
+                startService(playerIntent);
+                bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+                serviceBound = true;
+            }
             Log.i("song--- :   ", "1");
+
+
 
 //        if(storage.loadAudio()==null)
 //        storage.storeAudio(songsList);
 //        else
 //            storage.storeAudio(storage.loadAudio());
-//
-//
-//
 //        if(songsList.size()==0)
 //        storage.storeAudioIndex(-1);
 //        else
@@ -403,9 +395,6 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 //
 //        Log.i("initial",Integer.toString(storage.loadAudioIndex()));
 //        Log.i("initial",storage.loadAudio().get(storage.loadAudioIndex()).getSongTitle());
-
-
-            // playAudio(storage.loadAudioIndex());
 
 
 //Discrete Player Recycler View
@@ -450,6 +439,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
                 setPlayerSongsRecyclerView(songsList, 0);
 
             }
+
             Log.i("song--- :   ", "2");
             infiniteAdapter = InfiniteScrollAdapter.wrap(songAdapter);
             mySongsRecyclerView.setAdapter(songAdapter);
@@ -464,18 +454,23 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 
 
             mySongsRecyclerView.scrollToPosition(storage.loadAudioIndex());
-            MediaPlayerService.playing=false;
-            Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-            context.sendBroadcast(broadcastIntent);
+//            MediaPlayerService.playing=false;
+//            Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+//            context.sendBroadcast(broadcastIntent);
+
+
+            initViewObjects();
 
             if(MediaPlayerService.playing)
             {
                 playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
                 playPauseButton_expanded.setImageResource(R.drawable.pause_button);
-                isPlaying = true;
+                myHandler.postDelayed(UpdateSongTime, 100);
+                Log.i("paused", "llllllll ");
+                  isPlaying = true;
+
             }
 
-            initViewObjects();
             mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
                 @Override
                 public void onStateChanged(@NonNull View view, int i) {
@@ -548,7 +543,6 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
                 public void onSlide(@NonNull View view, float v) {
 
                     if (v > 0.4f)
-
                         player_View_layout.findViewById(R.id.collapsed_player_view).setVisibility(View.VISIBLE);
                     player_View_layout.findViewById(R.id.collapsed_player_view).setAlpha(1f - v);
                     player_View_layout.findViewById(R.id.playpause_button_player_collapsed).setAlpha(1f - v);
@@ -608,6 +602,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 
     public void initViewObjects() {
 
+        final StorageUtil storage = new StorageUtil(getApplicationContext());
 
         playPauseButton_collapsed = player_View_layout.findViewById(R.id.playpause_button_player_collapsed);
         playPauseButton_expanded = player_View_layout.findViewById(R.id.play_pause_button_expanded);
@@ -627,9 +622,10 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
             public void onClick(View v) {
 
                 if (isPlaying) {
-                    if (player.mediaPlayer != null)
+                    if (player.mediaPlayer != null) {
                         currentPos = player.mediaPlayer.getCurrentPosition();
-                    else
+                        storage.storeAudioPosition(currentPos);
+                    } else
                         currentPos = 0;
                     Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
                     myHandler.postDelayed(UpdateSongTime, 100);
@@ -656,9 +652,10 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
             public void onClick(View v) {
 
                 if (isPlaying) {
-                    if (player.mediaPlayer != null)
+                    if (player.mediaPlayer != null) {
                         currentPos = player.mediaPlayer.getCurrentPosition();
-                    else
+                        storage.storeAudioPosition(currentPos);
+                    } else
                         currentPos = 0;
                     Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
                     myHandler.postDelayed(UpdateSongTime, 100);
@@ -684,8 +681,6 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
             @Override
             public void onClick(View v) {
 
-                StorageUtil storage = new StorageUtil(context.getApplicationContext());
-
                 if (storage.loadAudioIndex() + 1 >= storage.loadAudio().size()) {
                     storage.storeAudioIndex(0);
                 } else {
@@ -693,6 +688,8 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
                 }
                 songChanged(storage.loadAudioIndex());
                 currentPos = 0;
+                storage.storeAudioPosition(currentPos);
+
                 Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
                 context.sendBroadcast(broadcastIntent);
                 mySongsRecyclerView.smoothScrollToPosition(storage.loadAudioIndex());
@@ -712,6 +709,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
                 }
                 songChanged(storage.loadAudioIndex());
                 currentPos = 0;
+                storage.storeAudioPosition(currentPos);
                 Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
                 context.sendBroadcast(broadcastIntent);
 
@@ -842,6 +840,8 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
                                     toMinutes((long) startTime)))
             );
 
+
+
             endTimeView_expanded.setText(String.format("%d: %ds",
                     TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
                     TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
@@ -873,6 +873,8 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
 //        if(adapterPosition>0)
         songChanged(adapterPosition);
         currentPos = 0;
+        final StorageUtil storage = new StorageUtil(getApplicationContext());
+        storage.storeAudioPosition(currentPos);
         //  playAudio(storage.loadAudioIndex());
 
     }
@@ -1284,6 +1286,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
             player = binder.getService();
+            player.mediaPlayer.seekTo(new StorageUtil(getApplicationContext()).loadAudioPosition());
             serviceBound = true;
 
             Toast.makeText(MainActivity.this, "Service Bound", Toast.LENGTH_SHORT).show();
@@ -1292,6 +1295,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
         @Override
         public void onServiceDisconnected(ComponentName name) {
             serviceBound = false;
+         new StorageUtil(getApplicationContext()).storeAudioPosition(player.mediaPlayer.getCurrentPosition());
         }
     };
 
@@ -1301,7 +1305,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
         savedInstanceState.putBoolean("ServiceState", serviceBound);
         StorageUtil storage = new StorageUtil(getApplicationContext());
         savedInstanceState.putInt("pos", storage.loadAudioIndex());
-        savedInstanceState.putInt("seekpos", currentPos);
+        savedInstanceState.putInt("seekpos", storage.loadAudioPosition());
         // savedInstanceState.putBoolean("isPlaying", isPlaying);
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -1309,24 +1313,29 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        serviceBound = savedInstanceState.getBoolean("ServiceState");
+        serviceBound = savedInstanceState.getBoolean("ServiceState",false);
         StorageUtil storage = new StorageUtil(getApplicationContext());
 
         storage.storeAudioIndex(savedInstanceState.getInt("pos"));
         currentPos = savedInstanceState.getInt("seekpos");
         // isPlaying = savedInstanceState.getBoolean("isPlaying");
+        if(MediaPlayerService.playing)
+        {
+            isPlaying=true;
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //currentPos=0;
-        if (serviceBound) {
-            unbindService(serviceConnection);
+           unbindService(serviceConnection);
+        Log.i("restarted","restarted");
 //            //service is active
-        }
 
     }
+
+
     @Override
     public void setDrawerEnabled(boolean enabled) {
         int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :

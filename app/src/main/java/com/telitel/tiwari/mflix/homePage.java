@@ -56,7 +56,6 @@ public class homePage extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home_page, container, false);
 
-
         myTopRecyclerView = (RecyclerView) v.findViewById(R.id.top_recyclerView);
         songs_recyclerView_adapter topSongAdapter = new songs_recyclerView_adapter(getContext(), topPicsList, 0);
         myTopRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -81,6 +80,7 @@ public class homePage extends Fragment {
                storage.clearCachedAudioPlaylist();
                storage.storeAudio(topPicsList);
                storage.storeAudioIndex(position);
+               storage.storeAudioPosition(0);
               // MainActivity.playAudio(0);
                //Service is active
                //Send a broadcast to the service -> PLAY_NEW_AUDIO
@@ -100,6 +100,7 @@ public class homePage extends Fragment {
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(recentList);
                 storage.storeAudioIndex(position);
+                storage.storeAudioPosition(0);
               //  storage.storeAudioIndex(songsList.indexOf(recentList.get(position)));
                // MainActivity.playAudio(0);
 //
@@ -126,6 +127,7 @@ public class homePage extends Fragment {
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(songsList);
                 storage.storeAudioIndex(position);
+                storage.storeAudioPosition(0);
               //  storage.storeAudioIndex(songsList.indexOf(songsList.get(position)));
               //  MainActivity.playAudio(0);
 

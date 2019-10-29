@@ -64,6 +64,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     //List of available Audio files
     private ArrayList<song_template> audioList;
     private int audioIndex = -1;
+    private int audioPosition = 0;
+
     private song_template activeAudio; //an object of the currently playing audio
     private application_running_helper Helper;
 
@@ -75,7 +77,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
-  private NotificationManagerCompat notificationManager;
+    StorageUtil storage = new StorageUtil(this);
+    private NotificationManagerCompat notificationManager;
 
 
 
@@ -156,10 +159,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             //Load data from SharedPreferences
-            StorageUtil storage = new StorageUtil(getApplicationContext());
             audioList = storage.loadAudio();
             audioIndex = storage.loadAudioIndex();
-
+            audioPosition = storage.loadAudioPosition();
 
             if (audioIndex != -1 && audioIndex < audioList.size()) {
                 //index is in a valid range
@@ -217,8 +219,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
 
 
-        Intent startActivityOnClick = new Intent(this,MainActivity.class);
-        PendingIntent pendingIntentActivity = PendingIntent.getActivity(this,0,startActivityOnClick,0);
+        Intent startActivityOnClick = new Intent(getApplicationContext(),MainActivity.class);
+        PendingIntent pendingIntentActivity = PendingIntent.getActivity(this,0,startActivityOnClick,PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -353,8 +355,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         playing=false;
         currentPos=0;
         mp.seekTo(0);
-        StorageUtil storage = new StorageUtil(getApplicationContext());
-
+        storage.storeAudioPosition(currentPos);
         if(storage.loadAudioIndex()+1>=storage.loadAudio().size()){
             storage.storeAudioIndex(0);
         }
@@ -364,7 +365,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
         Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
         getApplicationContext().sendBroadcast(broadcastIntent);
-        currentPos=0;
         if (Helper.isAppRunning(MediaPlayerService.this, "com.telitel.tiwari.mflix")) {
             // App is running
             MainActivity.songChanged(storage.loadAudioIndex());
@@ -396,6 +396,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         return false;
     }
 
+
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
         //Invoked to communicate some info.
@@ -405,7 +406,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public void onPrepared(MediaPlayer mp) {
          //Invoked when the media source is ready for playback.
-        mediaPlayer.seekTo((int) currentPos);
+
+        mediaPlayer.seekTo((int) storage.loadAudioPosition());
         playMedia();
         playing=true;
 
@@ -558,6 +560,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             @Override
             public void onSkipToNext() {
                 super.onSkipToNext();
+                storage.storeAudioPosition(0);
                 skipToNext();
                 updateMetaData();
                 buildNotification(PlaybackStatus.PLAYING);
@@ -566,6 +569,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             @Override
             public void onSkipToPrevious() {
                 super.onSkipToPrevious();
+                storage.storeAudioPosition(0);
                 skipToPrevious();
                 updateMetaData();
                 buildNotification(PlaybackStatus.PLAYING);
@@ -601,7 +605,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
 
         //Update stored index
-        new StorageUtil(getApplicationContext()).storeAudioIndex(audioIndex);
+       storage.storeAudioIndex(audioIndex);
+       storage.storeAudioPosition(0);
 
         stopMedia();
         //reset mediaPlayer
@@ -627,7 +632,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
 
         //Update stored index
-        new StorageUtil(getApplicationContext()).storeAudioIndex(audioIndex);
+        storage.storeAudioIndex(audioIndex);
+        storage.storeAudioPosition(0);
+
 
         stopMedia();
         //reset mediaPlayer
@@ -697,19 +704,21 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         String actionString = playbackAction.getAction();
         if (actionString.equalsIgnoreCase(ACTION_PLAY)) {
             {
-                MainActivity.player_View_layout.findViewById(R.id.play_pause_button_expanded).performClick();
+               // MainActivity.player_View_layout.findViewById(R.id.play_pause_button_expanded).performClick();
             }
             transportControls.play();
         } else if (actionString.equalsIgnoreCase(ACTION_PAUSE)) {
-            if (Helper.isAppRunning(MediaPlayerService.this, "com.telitel.tiwari.mflix")) {
-                MainActivity.player_View_layout.findViewById(R.id.play_pause_button_expanded).performClick();
+            if (Helper.isAppRunning(getApplicationContext(), "com.telitel.tiwari.mflix")) {
+              //  MainActivity.player_View_layout.findViewById(R.id.play_pause_button_expanded).performClick();
             }
             transportControls.pause();
         } else if (actionString.equalsIgnoreCase(ACTION_NEXT)) {
             currentPos=0;
+            storage.storeAudioPosition(0);
             transportControls.skipToNext();
         } else if (actionString.equalsIgnoreCase(ACTION_PREVIOUS)) {
             currentPos=0;
+            storage.storeAudioPosition(0);
             transportControls.skipToPrevious();
         } else if (actionString.equalsIgnoreCase(ACTION_STOP)) {
             transportControls.stop();

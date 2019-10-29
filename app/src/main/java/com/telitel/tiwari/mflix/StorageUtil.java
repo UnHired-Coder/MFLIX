@@ -53,6 +53,17 @@ public class StorageUtil {
         return preferences.getInt("audioIndex", -1);//return -1 if no data found
     }
 
+    public void storeAudioPosition(int index) {
+        preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("audioPosition", index);
+        editor.apply();
+    }
+
+    public int loadAudioPosition() {
+        preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+        return preferences.getInt("audioPosition", 0);//return 0 if no data found
+    }
     public void clearCachedAudioPlaylist() {
         preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
