@@ -44,6 +44,7 @@ public class SearchPage extends Fragment {
     SearchVideosList sv;
     String query_str;
 
+    public final String Broadcast_PAUSE_AUDIO = "com.telitel.tiwari.mflix.PauseAudio";
 
 
 
@@ -73,8 +74,9 @@ public class SearchPage extends Fragment {
 
         getData();
         getSearchData();
-
-
+        Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
+        if(getContext()!=null)
+        getContext().sendBroadcast(broadcastIntent);
         return v;
     }
 

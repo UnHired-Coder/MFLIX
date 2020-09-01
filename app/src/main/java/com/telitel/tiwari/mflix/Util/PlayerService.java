@@ -41,10 +41,10 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     public static final String ACTION_NEXT = "com.telitel.tiwari.mflix.ACTION_NEXT";
     public static final String ACTION_STOP = "com.telitel.tiwari.mflix.ACTION_STOP";
 
-    public final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
-    public final String Broadcast_PAUSE_AUDIO = " com.telitel.tiwari.mflix.PauseAudio";
-    public final String Broadcast_RESUME_AUDIO = " com.telitel.tiwari.mflix.ResumeAudio";
-    public final String Broadcast_STOP_AUDIO = " com.telitel.tiwari.mflix.StopAudio";
+    public final String Broadcast_PLAY_NEW_AUDIO = "com.telitel.tiwari.mflix.PlayNewAudio";
+    public final String Broadcast_PAUSE_AUDIO = "com.telitel.tiwari.mflix.PauseAudio";
+    public final String Broadcast_RESUME_AUDIO = "com.telitel.tiwari.mflix.ResumeAudio";
+    public final String Broadcast_STOP_AUDIO = "com.telitel.tiwari.mflix.StopAudio";
 
 
     private MediaPlayer mediaPlayer;
@@ -97,7 +97,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     private BroadcastReceiver stopAudioReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "onReceive: " + "Stop Audio");
+            Log.i(TAG, "onReceive: " + "Stop Audio");Log.i("TAG", "onStart: "+"-------------------------------");
             stopMedia();
         }
     };
@@ -167,6 +167,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
     public MediaPlayer getPlayerInstance(){
         Log.i(TAG, "getPlayerInstance: "+ mediaPlayer);
+        if(mediaPlayer == null)
+            mediaPlayer = new MediaPlayer();
         return mediaPlayer;
     }
 

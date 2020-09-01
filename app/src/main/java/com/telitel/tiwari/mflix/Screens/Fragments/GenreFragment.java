@@ -93,36 +93,5 @@ public class GenreFragment extends Fragment {
 
             songs_cursor.close();
         }
-
-
-//        song_template song = new song_template(0L,"",""," "," ",0L," "," "," ","","");
-//
-//
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-//        songsList.add(song);
-
-
     }
 }

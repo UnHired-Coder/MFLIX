@@ -3,19 +3,13 @@ package com.telitel.tiwari.mflix.YouTubeVideo;
 import android.app.PictureInPictureParams;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.media.audiofx.DynamicsProcessing;
-import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Config;
 import android.util.Log;
 import android.util.Rational;
 import android.view.View;
 import android.widget.Button;
-import android.widget.MediaController;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -23,14 +17,18 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.telitel.tiwari.mflix.MainActivity;
 import com.telitel.tiwari.mflix.R;
-//import com.telitel.tiwari.mflix.Util.MediaPlayerService;
 
 public class VideoPlayer extends YouTubeBaseActivity {
 
-    private Button mode;
     private YouTubePlayerView youTubeView;
     private YouTubePlayer.OnInitializedListener onInitializedListener;
     private static final String key = "AIzaSyCKAP7Y-RMjj3C4quc1pknoMjmYaw8lR5k";
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,24 +37,24 @@ public class VideoPlayer extends YouTubeBaseActivity {
 
         Intent myIntent = getIntent();
         final String videoId = myIntent.getStringExtra("videoId");
-        mode = findViewById(R.id.pipmode_button);
+        Button changeMode = findViewById(R.id.pipmode_button);
 
         youTubeView = (YouTubePlayerView) findViewById(R.id.player_video_view);
         onInitializedListener = new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, final YouTubePlayer youTubePlayer, boolean b) {
-             //   youTubePlayer.loadVideo("https://www.youtube.com/watch?v=oCBDl58lBoU");
                 if (!b) {
                     youTubePlayer.cueVideo(videoId);
 
                     youTubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
                         @Override
                         public void onLoading() {
+
                         }
 
                         @Override
                         public void onLoaded(String s) {
-                            Log.i("Entered","LOADED  ");
+                            Log.i("Entered", "LOADED  ");
 
 //                            if(!MediaPlayerService.playing)
                             youTubePlayer.play();
@@ -87,15 +85,15 @@ public class VideoPlayer extends YouTubeBaseActivity {
                     youTubePlayer.setPlaybackEventListener(new YouTubePlayer.PlaybackEventListener() {
                         @Override
                         public void onPlaying() {
-                            Log.i("Entered","PIP MODE PLAY");
+                            Log.i("Entered", "PIP MODE PLAY");
                         }
 
                         @Override
                         public void onPaused() {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                if(isInPictureInPictureMode()) {
+                                if (isInPictureInPictureMode()) {
                                     youTubePlayer.play();
-                                    Log.i("Entered","PIP MODE PAUSE");
+                                    Log.i("Entered", "PIP MODE PAUSE");
                                 }
                             }
                         }
@@ -103,7 +101,7 @@ public class VideoPlayer extends YouTubeBaseActivity {
                         @Override
                         public void onStopped() {
                             youTubePlayer.play();
-                            Log.i("Entered","PIP MODE STOP");
+                            Log.i("Entered", "PIP MODE STOP");
                         }
 
                         @Override
@@ -127,45 +125,45 @@ public class VideoPlayer extends YouTubeBaseActivity {
         };
 
 
-        youTubeView.initialize(key,onInitializedListener);
+        youTubeView.initialize(key, onInitializedListener);
 
         //        videoView= findViewById(R.id.player_video_view);
 //        videoView.setVideoURI(Uri.parse("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
 //        videoView.start();
 
-        mode.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-              if (android.os.Build.VERSION.SDK_INT >= 26) {
-                  //Trigger PiP mode
-                  try {
-                      Rational rational = new Rational(youTubeView.getWidth(), youTubeView.getHeight());
+        changeMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (android.os.Build.VERSION.SDK_INT >= 26) {
+                    //Trigger PiP changeMode
+                    try {
+                        Rational rational = new Rational(youTubeView.getWidth(), youTubeView.getHeight());
 
-                      PictureInPictureParams mParams =
-                              new PictureInPictureParams.Builder()
-                                      .setAspectRatio(rational)
-                                      .build();
+                        PictureInPictureParams mParams =
+                                new PictureInPictureParams.Builder()
+                                        .setAspectRatio(rational)
+                                        .build();
 
-                      enterPictureInPictureMode(mParams);
-                      youTubeView.initialize(key,onInitializedListener);
-                  } catch (IllegalStateException e) {
-                      e.printStackTrace();
-                  }
-              } else {
-                  Toast.makeText(getApplicationContext(), "API 26 needed to perform PiP", Toast.LENGTH_SHORT).show();
-              }
-          }
-      });
+                        enterPictureInPictureMode(mParams);
+                        youTubeView.initialize(key, onInitializedListener);
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "API 26 needed to perform PiP", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 
     @Override
-    public void onUserLeaveHint () {
+    public void onUserLeaveHint() {
 
         if (android.os.Build.VERSION.SDK_INT >= 26) {
-            //Trigger PiP mode
+            //Trigger PiP changeMode
             try {
-                Rational rational = new Rational(youTubeView.getWidth()/10, youTubeView.getHeight()/10);
+                Rational rational = new Rational(youTubeView.getWidth() / 10, youTubeView.getHeight() / 10);
 
                 PictureInPictureParams mParams =
                         new PictureInPictureParams.Builder()
@@ -198,9 +196,9 @@ public class VideoPlayer extends YouTubeBaseActivity {
 
 
     @Override
-    public void onPictureInPictureModeChanged (boolean isInPictureInPictureMode, Configuration newConfig) {
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         if (isInPictureInPictureMode) {
-            // Hide the full-screen UI (controls, etc.) while in picture-in-picture mode.
+            // Hide the full-screen UI (controls, etc.) while in picture-in-picture changeMode.
         } else {
             // Restore the full-screen UI.
         }

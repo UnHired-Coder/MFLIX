@@ -10,7 +10,8 @@
     <!-- TODO: Update blank fragment layout -->
 
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/sv_home_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="680dp">
 
@@ -28,7 +29,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"></android.support.v7.widget.RecyclerView>
+                app:layout_constraintTop_toBottomOf="@+id/tv_top_pics"></android.support.v7.widget.RecyclerView>
 
 
             <android.support.v7.widget.RecyclerView
@@ -40,7 +41,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4"></android.support.v7.widget.RecyclerView>
+                app:layout_constraintTop_toBottomOf="@+id/tv_recents"></android.support.v7.widget.RecyclerView>
 
 
             <android.support.v7.widget.RecyclerView
@@ -49,14 +50,15 @@
                 android:layout_height="800dp"
                 android:layout_marginTop="4dp"
                 android:background="@color/colorPrimary"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"></android.support.v7.widget.RecyclerView>
+                app:layout_constraintTop_toBottomOf="@+id/tv_all_songs"></android.support.v7.widget.RecyclerView>
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tv_all_songs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="176dp"
@@ -73,7 +75,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/recent_recyclerView" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tv_top_pics"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="176dp"
@@ -90,21 +92,20 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/tv_recents"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="156dp"
-                android:layout_marginLeft="156dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="156dp"
-                android:layout_marginRight="156dp"
                 android:layout_marginBottom="6dp"
                 android:text="Recently Added"
                 android:textColor="#FAF2F2"
                 app:layout_constraintBottom_toTopOf="@+id/recent_recyclerView"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/top_recyclerView" />
         </android.support.constraint.ConstraintLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

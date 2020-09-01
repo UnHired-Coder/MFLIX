@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -100,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
     BottomSheetBehavior mBottomSheetBehavior;
 
     //Views
+    ImageView collapsedImageView;
+    TextView collapsedTextView;
+    View collapsedPlayerView;
     View playerViewLayout;
     ImageView playPauseButton_collapsed;
     ImageView playPauseButton_expanded;
@@ -119,8 +123,8 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
     //    public final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
 //    public final String Broadcast_PAUSE_AUDIO = " com.telitel.tiwari.mflix.PauseAudio";
 //    public final String Broadcast_RESUME_AUDIO = " com.telitel.tiwari.mflix.ResumeAudio";
-//    public final String Broadcast_STOP_AUDIO = " com.telitel.tiwari.mflix.StopAudio";
-    public static final String Broadcast_MEDIA_CHANGED = " com.telitel.tiwari.mflix.MediaChanged";
+    public static final String Broadcast_STOP_AUDIO = "com.telitel.tiwari.mflix.StopAudio";
+    public static final String Broadcast_MEDIA_CHANGED = "com.telitel.tiwari.mflix.MediaChanged";
 
     private boolean boundedService = false;
     PlayerService playerService;
@@ -185,8 +189,13 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
             List<SongModel> list = gson.fromJson(json, type);
             int position = intent.getIntExtra("position", 0);
             setPlayerSongsRecyclerView(list, position);
-            if(playerService!=null)
-                playCurrent();
+            if (playerService != null) {
+                mediaStatus = MEDIA_STATUS.STOPPED;
+                collapsedTextView.setText(list.get(position).getSongTitle());
+                collapsedImageView.setImageBitmap(BitmapFactory.decodeFile(list.get(position).getSongArtPath()));
+                playPauseButton_collapsed.performClick();
+            }
+//                playCurrent(true);
         }
     };
 
@@ -251,6 +260,12 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
     private void _initViewHome() {
 
         playPauseButton_collapsed = playerViewLayout.findViewById(R.id.playpause_button_player_collapsed);
+        collapsedImageView = playerViewLayout.findViewById(R.id.song_art_player_collapsed);
+        ;
+        collapsedTextView = playerViewLayout.findViewById(R.id.song_title_player_collapsed);
+        collapsedPlayerView = playerViewLayout.findViewById(R.id.collapsed_player_view);
+
+
         playPauseButton_expanded = playerViewLayout.findViewById(R.id.play_pause_button_expanded);
         playNextButton_expanded = playerViewLayout.findViewById(R.id.play_next_song_button);
         playPreviousButton_expanded = playerViewLayout.findViewById(R.id.play_previous_song_button);
@@ -261,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         shuffleSongsButton_expanded = playerViewLayout.findViewById(R.id.shuffle_songs_button);
         repeatSongsButton_expanded = playerViewLayout.findViewById(R.id.repeat_song_button);
         songSeekBar = playerViewLayout.findViewById(R.id.seekBar_song);
+
 
         playPauseAction(playPauseButton_collapsed);
         playPauseAction(playPauseButton_expanded);
@@ -391,25 +407,39 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
             @Override
             public void onClick(View view) {
                 final StorageUtil storageUtil = StorageUtil.getInstance(context);
-                if (storageUtil.loadAudioIndex() + 1 >= storageUtil.loadAudio().size())
-                    storageUtil.storeAudioIndex(0);
-                else
-                    storageUtil.storeAudioIndex(storageUtil.loadAudioIndex() + 1);
-                playerService.playNewMedia();
+                int pos = 0;
+                if (storageUtil.loadAudioIndex() + 1 >= storageUtil.loadAudio().size()) {
+                    pos = 0;
+                } else {
+                    pos = storageUtil.loadAudioIndex() + 1;
+                }
+                storageUtil.storeAudioIndex(pos);
+                mySongsRecyclerView.scrollToPosition(pos);
+                updateCollapsedView(storageUtil.loadAudio().get(pos).getSongArtPath(), storageUtil.loadAudio().get(pos).getSongTitle());
+                if (playerService.getPlayerInstance().isPlaying()) {
+                    playerService.playNewMedia();
+                }
             }
         });
     }
+
 
     void playPreviousAction(View v) {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final StorageUtil storageUtil = StorageUtil.getInstance(context);
-                if (storageUtil.loadAudioIndex() - 1 <= 0)
-                    storageUtil.storeAudioIndex(storageUtil.loadAudio().size() - 1);
-                else
-                    storageUtil.storeAudioIndex(storageUtil.loadAudioIndex() - 1);
-                playerService.playNewMedia();
+                int pos = 0;
+                if (storageUtil.loadAudioIndex() - 1 <= 0) {
+                    pos = storageUtil.loadAudio().size() - 1;
+                } else {
+                    pos = storageUtil.loadAudioIndex() - 1;
+                }
+                storageUtil.storeAudioIndex(pos);
+                mySongsRecyclerView.scrollToPosition(pos);
+                updateCollapsedView(storageUtil.loadAudio().get(pos).getSongArtPath(), storageUtil.loadAudio().get(pos).getSongTitle());
+                if (playerService.getPlayerInstance().isPlaying())
+                    playerService.playNewMedia();
             }
         });
     }
@@ -418,18 +448,11 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
     void playPrevious() {
 
         final StorageUtil storageUtil = StorageUtil.getInstance(context);
-        if (storageUtil.loadAudioIndex() - 1 <= 0)
+        if (storageUtil.loadAudioIndex() - 1 <= 0) {
             storageUtil.storeAudioIndex(storageUtil.loadAudio().size() - 1);
-        else
+            mySongsRecyclerView.scrollToPosition(storageUtil.loadAudio().size() - 1);
+        } else
             storageUtil.storeAudioIndex(storageUtil.loadAudioIndex() - 1);
-
-        if (playerService != null && playerService.getPlayerInstance() != null) {
-            if (!playerService.getPlayerInstance().isPlaying()) {
-                playerService.getPlayerInstance().stop();
-                return;
-            }
-            playerService.playNewMedia();
-        }
     }
 
 
@@ -438,15 +461,11 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         final StorageUtil storageUtil = StorageUtil.getInstance(context);
         if (storageUtil.loadAudioIndex() + 1 >= storageUtil.loadAudio().size())
             storageUtil.storeAudioIndex(0);
-        else
+        else {
             storageUtil.storeAudioIndex(storageUtil.loadAudioIndex() + 1);
-        if (playerService != null && playerService.getPlayerInstance() != null) {
-            if (!playerService.getPlayerInstance().isPlaying()) {
-                mediaStatus = MEDIA_STATUS.STOPPED;
-                return;
-            }
-            playerService.playNewMedia();
+            mySongsRecyclerView.scrollToPosition(storageUtil.loadAudio().size() - 1);
         }
+        playerService.playNewMedia();
     }
 
     void playCurrent() {
@@ -551,6 +570,11 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         alertD.setView(promptView);
         alertD.show();
 
+    }
+
+    private void updateCollapsedView(String path, String title) {
+        collapsedTextView.setText(title);
+        collapsedImageView.setImageBitmap(BitmapFactory.decodeFile(path));
     }
 
     private void setPlayerSongsRecyclerView(List<SongModel> songsList2, int position) {
@@ -793,8 +817,8 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
                                             toMinutes((long) finalTime)))
                     );
-                    myHandler.postDelayed(this, 1000);
                 }
+                myHandler.postDelayed(this, 1000);
             }
         }
     };
@@ -871,9 +895,9 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
                     case 3:
                         navigationView.setSelectedItemId(R.id.nav_search);
                         break;
-                    case 4:
-                        navigationView.setSelectedItemId(R.id.nav_tools);
-                        break;
+//                    case 4:
+//                        navigationView.setSelectedItemId(R.id.nav_tools);
+//                        break;
                 }
             }
 
@@ -910,11 +934,11 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
                         playerViewLayout.setVisibility(View.GONE);
 
                         return true;
-                    case R.id.nav_tools:
-                        viewPager.setCurrentItem(4);
-                        playerViewLayout.setVisibility(View.GONE);
-
-                        return true;
+//                    case R.id.nav_tools:
+//                        viewPager.setCurrentItem(4);
+//                        playerViewLayout.setVisibility(View.GONE);
+//
+//                        return true;
 
                 }
                 return false;

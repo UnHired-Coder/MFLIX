@@ -22,10 +22,10 @@
         android:icon="@drawable/search_logo"
         />
 
-    <item android:id="@+id/nav_tools"
-        android:title="Tools"
-        android:icon="@drawable/tools_logo"
-        />
+<!--    <item android:id="@+id/nav_tools"-->
+<!--        android:title="Tools"-->
+<!--        android:icon="@drawable/tools_logo"-->
+<!--        />-->
 
 
 </menu>
