@@ -225,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         }
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -596,7 +595,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 
     private void _initRecyclerView() {
         mySongsRecyclerView = findViewById(R.id.songs_recyclerView_2);
-        SongsRecyclerViewAdapter songAdapter = new SongsRecyclerViewAdapter(context, songsListFinal, 3);
+        final SongsRecyclerViewAdapter songAdapter = new SongsRecyclerViewAdapter(context, songsListFinal, 3);
         mySongsRecyclerView.setAdapter(songAdapter);
 
         mySongsRecyclerView.addScrollStateChangeListener(new DiscreteScrollView.ScrollStateChangeListener<RecyclerView.ViewHolder>() {
@@ -612,6 +611,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 
                 StorageUtil storageUtil = StorageUtil.getInstance(context);
                 storageUtil.storeAudioIndex(adapterPosition);
+                updateCollapsedView(songsList.get(adapterPosition).getSongArtPath(),songsList.get(adapterPosition).getSongTitle());
                 playCurrent();
             }
 
@@ -732,7 +732,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
                             cursorSong.close();
                         }
                     }
-                    SongModel song = new SongModel(songId, songTitle, songArtist, songGenre, isFavourite, songAlbumID, songAlbum, songAlbumArtPath, songArtPath, songPath, isFavourite);
+                    SongModel song = new SongModel(songId, songTitle, songArtist, songGenre, "false", songAlbumID, songAlbum, songAlbumArtPath, songArtPath, songPath, isFavourite);
                     databaseHelper.insertDataSongs(songId, songTitle, songArtist, songGenre, songAlbumID, songAlbum, songAlbumArtPath, songArtPath, songPath, db, isFavourite);
                     songsList.add(song);
                     songsListFinal.add(song);
@@ -995,8 +995,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         Adapter.add(new PlayListPage(), "Playlist");
         Adapter.add(new FavouritesPage(), "Favourite");
         Adapter.add(new SearchPage(), "Search");
-        Adapter.add(new ToolsPage(), "Tools");
-
+//        Adapter.add(new ToolsPage(), "Tools");
         viewPager.setAdapter(Adapter);
     }
 
