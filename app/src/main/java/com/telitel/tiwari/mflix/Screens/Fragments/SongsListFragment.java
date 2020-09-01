@@ -1,6 +1,7 @@
 package com.telitel.tiwari.mflix.Screens.Fragments;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.telitel.tiwari.mflix.Database.DatabaseHelper;
 import com.telitel.tiwari.mflix.Database.StorageUtil;
 import com.telitel.tiwari.mflix.MainActivity;
@@ -24,6 +26,7 @@ import com.telitel.tiwari.mflix.RecyclerViewAdapters.SongsRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 //import static com.telitel.tiwari.mflix.MainActivity.Broadcast_PLAY_NEW_AUDIO;
 
@@ -34,12 +37,13 @@ import java.util.List;
 public class SongsListFragment extends Fragment {
 
 
-    public static TextView tv;
+    public TextView tv;
     private ArrayList<SongModel> songsList;
 
     static DatabaseHelper _songs_databaseHelper;
     static SQLiteDatabase songs_database;
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,15 +65,13 @@ public class SongsListFragment extends Fragment {
                 storage.storeAudio(songsList);
                 storage.storeAudioIndex(position);
                 storage.storeAudioPosition(0);
-//                 MainActivity.playAudio(0);
-//                Service is active
-//                Send a broadcast to the service -> PLAY_NEW_AUDIO
-//                if (MainActivity.isPlaying) {
-//                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-//                    getActivity().sendBroadcast(broadcastIntent);
-//                }
-//                Log.i("But", "here");
-//                MainActivity.setPlayerSongsRecyclerView(songsList, position);
+                Intent broadcastIntent = new Intent(MainActivity.Broadcast_MEDIA_CHANGED);
+                Gson gson = new Gson();
+                String json = gson.toJson(songsList);
+                broadcastIntent.putExtra("data", json);
+                broadcastIntent.putExtra("position", position);
+                if (getContext() != null)
+                    getContext().sendBroadcast(broadcastIntent);
             }
         });
 
@@ -79,7 +81,6 @@ public class SongsListFragment extends Fragment {
         if (getArguments() != null) {
             tv.setText("[ " + getArguments().getString("list_filter") + " ]");
         }
-
 
         return v;
     }
@@ -101,22 +102,23 @@ public class SongsListFragment extends Fragment {
         Cursor songs_cursor = null;
 
 
-        if (getArguments().getString("type").equals("album")) {
+        assert getArguments() != null;
+        if (Objects.equals(getArguments().getString("type"), "album")) {
 
             songs_cursor = songs_database.rawQuery("SELECT * FROM _songs_tb WHERE _song_album=?", new String[]{getArguments().getString("list_filter")});
 
         }
-        if (getArguments().getString("type").equals("artist")) {
+        if (Objects.equals(getArguments().getString("type"), "artist")) {
 
             songs_cursor = songs_database.rawQuery("SELECT * FROM _songs_tb WHERE _song_artist=?", new String[]{getArguments().getString("list_filter")});
 
         }
-        if (getArguments().getString("type").equals("genre")) {
+        if (Objects.equals(getArguments().getString("type"), "genre")) {
 
             songs_cursor = songs_database.rawQuery("SELECT * FROM _songs_tb WHERE _song_genre=?", new String[]{getArguments().getString("list_filter")});
 
         }
-        if (getArguments().getString("type").equals("playlist")) {
+        if (Objects.equals(getArguments().getString("type"), "playlist")) {
 
             songs_cursor = songs_database.rawQuery("SELECT * FROM '" + getArguments().getString("list_filter") + "'", new String[]{});
 
@@ -138,8 +140,8 @@ public class SongsListFragment extends Fragment {
                 } while (songs_cursor.moveToNext());
 
             }
+            songs_cursor.close();
         }
-
 
     }
 

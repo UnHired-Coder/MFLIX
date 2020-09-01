@@ -1,5 +1,6 @@
 package com.telitel.tiwari.mflix.Screens.MainScreens;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -13,18 +14,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.telitel.tiwari.mflix.Database.DatabaseHelper;
 import com.telitel.tiwari.mflix.Database.StorageUtil;
+import com.telitel.tiwari.mflix.MainActivity;
 import com.telitel.tiwari.mflix.R;
 import com.telitel.tiwari.mflix.Models.SongModel;
 import com.telitel.tiwari.mflix.RecyclerViewAdapters.SongsRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-
-//import static com.telitel.tiwari.mflix.MainActivity.Broadcast_PLAY_NEW_AUDIO;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,7 +34,7 @@ public class HomePage extends Fragment {
     static DatabaseHelper _songs_databaseHelper;
     static SQLiteDatabase songs_database;
 
-
+    String TAG = "HOME";
     private ArrayList<SongModel> songsList;
     private ArrayList<SongModel> topPicsList;
     private ArrayList<SongModel> recentList;
@@ -70,20 +69,17 @@ public class HomePage extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Log.i("clicked", Integer.toString(position));
-
                 StorageUtil storage = StorageUtil.getInstance(getContext());
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(topPicsList);
                 storage.storeAudioIndex(position);
-                storage.storeAudioPosition(0);
-                // MainActivity.playAudio(0);
-                //Service is active
-                //Send a broadcast to the service -> PLAY_NEW_AUDIO
-//                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-//                getActivity().sendBroadcast(broadcastIntent);
-                Log.i("But", "here");
-//                MainActivity.setPlayerSongsRecyclerView(topPicsList, position);
-
+                Intent broadcastIntent = new Intent(MainActivity.Broadcast_MEDIA_CHANGED);
+                Gson gson = new Gson();
+                String json = gson.toJson(topPicsList);
+                broadcastIntent.putExtra("data", json);
+                broadcastIntent.putExtra("position", position);
+                if (getContext() != null)
+                    getContext().sendBroadcast(broadcastIntent);
 
             }
         });
@@ -95,10 +91,13 @@ public class HomePage extends Fragment {
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(recentList);
                 storage.storeAudioIndex(position);
-                storage.storeAudioPosition(0);
-
-                Log.i("But", "here");
-//                MainActivity.setPlayerSongsRecyclerView(recentList, position);
+                Intent broadcastIntent = new Intent(MainActivity.Broadcast_MEDIA_CHANGED);
+                Gson gson = new Gson();
+                String json = gson.toJson(recentList);
+                broadcastIntent.putExtra("data", json);
+                broadcastIntent.putExtra("position", position);
+                if (getContext() != null)
+                    getContext().sendBroadcast(broadcastIntent);
             }
         });
 
@@ -107,23 +106,17 @@ public class HomePage extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Log.i("clicked", Integer.toString(position));
-
-//
                 StorageUtil storage = StorageUtil.getInstance(getContext());
                 storage.clearCachedAudioPlaylist();
                 storage.storeAudio(songsList);
                 storage.storeAudioIndex(position);
-                storage.storeAudioPosition(0);
-                //  storage.storeAudioIndex(songsList.indexOf(songsList.get(position)));
-                //  MainActivity.playAudio(0);
-
-//                //Service is active
-//                //Send a broadcast to the service -> PLAY_NEW_AUDIO
-//                Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-//                getActivity().sendBroadcast(broadcastIntent);
-                Log.i("But", "here");
-//                MainActivity.setPlayerSongsRecyclerView(songsList, position);
-
+                Intent broadcastIntent = new Intent(MainActivity.Broadcast_MEDIA_CHANGED);
+                Gson gson = new Gson();
+                String json = gson.toJson(songsList);
+                broadcastIntent.putExtra("data", json);
+                broadcastIntent.putExtra("position", position);
+                if (getContext() != null)
+                    getContext().sendBroadcast(broadcastIntent);
             }
         });
 

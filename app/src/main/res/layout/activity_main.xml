@@ -93,10 +93,11 @@
             android:layout_marginBottom="0dp"
             app:itemIconTint="@color/bottom_nav_colors"
             app:itemTextColor="@color/textColorWhite"
-            app:menu="@menu/bottom_nav"></android.support.design.widget.BottomNavigationView>
+            app:menu="@menu/bottom_nav" />
 
 
     </RelativeLayout>
+
     <android.support.design.widget.NavigationView
         android:id="@+id/sideNavView"
         android:layout_width="wrap_content"
@@ -105,6 +106,6 @@
         app:headerLayout="@layout/nav_header"
         app:itemIconTint="@color/sideMenuIconColor"
         app:itemTextColor="@color/textColorBlack"
-        app:menu="@menu/side_nav_menu"></android.support.design.widget.NavigationView>
+        app:menu="@menu/side_nav_menu" />
 </android.support.v4.widget.DrawerLayout>
 </RelativeLayout>

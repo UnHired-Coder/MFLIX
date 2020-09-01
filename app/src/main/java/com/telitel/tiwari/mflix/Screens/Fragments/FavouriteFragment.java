@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.telitel.tiwari.mflix.Database.DatabaseHelper;
 import com.telitel.tiwari.mflix.Database.StorageUtil;
 import com.telitel.tiwari.mflix.MainActivity;
@@ -57,15 +58,13 @@ public class FavouriteFragment extends Fragment {
                 storage.storeAudio(songsList);
                 storage.storeAudioIndex(position);
                 storage.storeAudioPosition(0);
-                // MainActivity.playAudio(0);
-                //Service is active
-                //Send a broadcast to the service -> PLAY_NEW_AUDIO
-//                if (MainActivity.isPlaying) {
-//                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-//                    getActivity().sendBroadcast(broadcastIntent);
-//                }
-//                Log.i("But", "here");
-//                MainActivity.setPlayerSongsRecyclerView(songsList, position);
+                Intent broadcastIntent = new Intent(MainActivity.Broadcast_MEDIA_CHANGED);
+                Gson gson = new Gson();
+                String json = gson.toJson(songsList);
+                broadcastIntent.putExtra("data", json);
+                broadcastIntent.putExtra("position", position);
+                if (getContext() != null)
+                    getContext().sendBroadcast(broadcastIntent);
 
             }
         });

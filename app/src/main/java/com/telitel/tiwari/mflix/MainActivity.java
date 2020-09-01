@@ -3,15 +3,18 @@ package com.telitel.tiwari.mflix;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
@@ -47,6 +50,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.telitel.tiwari.mflix.Database.DatabaseHelper;
 import com.telitel.tiwari.mflix.Database.StorageUtil;
 import com.telitel.tiwari.mflix.Models.SongModel;
@@ -69,6 +74,7 @@ import com.yarolegovich.discretescrollview.DiscreteScrollView;
 import com.yarolegovich.discretescrollview.transform.Pivot;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,11 +82,11 @@ import java.util.concurrent.TimeUnit;
 
 enum MEDIA_STATUS {RUNNING, PAUSED, STOPPED};
 
-public class MainActivity extends AppCompatActivity implements SideNaviToggle, SharedPreferences.OnSharedPreferenceChangeListener{
+public class MainActivity extends AppCompatActivity implements SideNaviToggle, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        Toast.makeText(this, "Now Playing" + StorageUtil.getInstance(this).loadAudioIndex(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Now Playing" + StorageUtil.getInstance(this).loadAudioIndex(), Toast.LENGTH_LONG).show();
     }
 
     private int STORAGE_PERMISSION_CODE = 1;
@@ -110,10 +116,11 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 
     Context context;
 
-//    public final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
+    //    public final String Broadcast_PLAY_NEW_AUDIO = " com.telitel.tiwari.mflix.PlayNewAudio";
 //    public final String Broadcast_PAUSE_AUDIO = " com.telitel.tiwari.mflix.PauseAudio";
 //    public final String Broadcast_RESUME_AUDIO = " com.telitel.tiwari.mflix.ResumeAudio";
 //    public final String Broadcast_STOP_AUDIO = " com.telitel.tiwari.mflix.StopAudio";
+    public static final String Broadcast_MEDIA_CHANGED = " com.telitel.tiwari.mflix.MediaChanged";
 
     private boolean boundedService = false;
     PlayerService playerService;
@@ -159,19 +166,45 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 //                myHandler.postDelayed(UpdateSongTime, 100);
 //                mediaRunning = true;
 //            }
+
+            IntentFilter filter;
+            filter = new IntentFilter(Broadcast_MEDIA_CHANGED);
+            registerReceiver(mediaChangedReceiver, filter);
         }
     }
+
+
+    BroadcastReceiver mediaChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, " Media Changed ", Toast.LENGTH_SHORT).show();
+            Gson gson = new Gson();
+            String json = intent.getStringExtra("data");
+            Type type = new TypeToken<ArrayList<SongModel>>() {
+            }.getType();
+            List<SongModel> list = gson.fromJson(json, type);
+            int position = intent.getIntExtra("position", 0);
+            setPlayerSongsRecyclerView(list, position);
+            if(playerService!=null)
+                playCurrent();
+        }
+    };
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        StorageUtil.registerPres(context,this);
+        StorageUtil.registerPres(context, this);
+        IntentFilter filter;
+        filter = new IntentFilter(Broadcast_MEDIA_CHANGED);
+        registerReceiver(mediaChangedReceiver, filter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        StorageUtil.unRegisterPres(context,this);
+        StorageUtil.unRegisterPres(context, this);
+        unregisterReceiver(mediaChangedReceiver);
     }
 
     @Override
@@ -329,8 +362,6 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
             public void onClick(View view) {
                 if (mediaStatus == MEDIA_STATUS.RUNNING) {
 
-//                    Intent broadcastIntent = new Intent(Broadcast_PAUSE_AUDIO);
-//                    context.sendBroadcast(broadcastIntent);
                     playerService.pauseMedia();
                     playPauseButton_collapsed.setImageResource(R.drawable.play_button);
                     playPauseButton_expanded.setImageResource(R.drawable.play_button);
@@ -338,8 +369,6 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 
                 } else if (mediaStatus == MEDIA_STATUS.PAUSED) {
 
-//                    Intent broadcastIntent = new Intent(Broadcast_RESUME_AUDIO);
-//                    context.sendBroadcast(broadcastIntent);
                     playerService.resumeMedia();
                     playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
                     playPauseButton_expanded.setImageResource(R.drawable.pause_button);
@@ -347,8 +376,6 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 
                 } else if (mediaStatus == MEDIA_STATUS.STOPPED) {
 
-//                    Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-//                    context.sendBroadcast(broadcastIntent);
                     playerService.playNewMedia();
                     myHandler.postDelayed(UpdateSongTime, 100);
                     playPauseButton_collapsed.setImageResource(R.drawable.pause_button);
@@ -530,11 +557,6 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         SongsRecyclerViewAdapter songAdapter = new SongsRecyclerViewAdapter(context, songsList2, 3);
         mySongsRecyclerView.setAdapter(songAdapter);
         mySongsRecyclerView.scrollToPosition(position);
-//        Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-//        context.sendBroadcast(broadcastIntent);
-//        songChanged(position);
-//        if (!mediaRunning)
-//            playerViewLayout.findViewById(R.id.play_pause_button_expanded).callOnClick();
     }
 
     public void songChanged(int position) {
@@ -555,6 +577,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 
         mySongsRecyclerView.addScrollStateChangeListener(new DiscreteScrollView.ScrollStateChangeListener<RecyclerView.ViewHolder>() {
             int posFrom = 0;
+
             @Override
             public void onScrollStart(@NonNull RecyclerView.ViewHolder currentItemHolder, int adapterPosition) {
 
@@ -570,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 
             @Override
             public void onScroll(float scrollPosition, int currentPosition, int newPosition, @Nullable RecyclerView.ViewHolder currentHolder, @Nullable RecyclerView.ViewHolder newCurrent) {
-             posFrom = currentPosition;
+                posFrom = currentPosition;
             }
         });
         final StorageUtil storageUtil = StorageUtil.getInstance(context);
@@ -583,7 +606,6 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         } else {
             storageUtil.storeAudio(songsList);
             setPlayerSongsRecyclerView(songsList, 0);
-
         }
         mySongsRecyclerView.setAdapter(songAdapter);
         mySongsRecyclerView.setItemTransformer(new ScaleTransformer.Builder()

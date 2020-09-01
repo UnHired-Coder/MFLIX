@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 public class StorageUtil {
 
-
     public static StorageUtil mInstance;
     public static final String STORAGE = " com.telitel.tiwari.mflix.STORAGE";
     private static SharedPreferences preferences;
@@ -51,8 +50,7 @@ public class StorageUtil {
         preferences = mContext.getSharedPreferences(STORAGE, android.content.Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = preferences.getString("audioArrayArrayList", null);
-        Type type = new TypeToken<ArrayList<SongModel>>() {
-        }.getType();
+        Type type = new TypeToken<ArrayList<SongModel>>() {}.getType();
         cachedSongs = gson.fromJson(json, type);
         return cachedSongs;
     }
@@ -84,7 +82,6 @@ public class StorageUtil {
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.apply();
-        editor.commit();
     }
 
     public static  void registerPres(Context context, SharedPreferences.OnSharedPreferenceChangeListener listener) {
