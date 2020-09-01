@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
         }
     }
 
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {

@@ -3,6 +3,7 @@ package com.telitel.tiwari.mflix.Screens.MainScreens;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,7 +18,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.telitel.tiwari.mflix.MainActivity;
 import com.telitel.tiwari.mflix.R;
+import com.telitel.tiwari.mflix.Util.PlayerService;
 import com.telitel.tiwari.mflix.YouTubeVideo.VideoPlayer;
 import com.telitel.tiwari.mflix.YouTubeVideo.VideoRecyclerAdapter;
 import com.telitel.tiwari.mflix.YouTubeVideo.YoutubeDataAPI;

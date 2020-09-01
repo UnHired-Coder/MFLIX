@@ -68,7 +68,6 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
         String ImageUrl = mData.getItems().get(i).getSnippet().getThumbnails().getMedium().getUrl();
         Picasso.with(this.mContext).load(ImageUrl).into(mySongsViewHolder.iv_AlbumArt);
 
-
     }
 
 
@@ -81,6 +80,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
 
     @Override
     public int getItemCount() {
+        if(mData==null)
+            return  0;
         return mData.getItems().size();
     }
 
