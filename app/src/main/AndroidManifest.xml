@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.telitel.tiwari.mflix">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,31 +14,31 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:name=".App_start"
+        android:name=".Application.ApplicationInit"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<!--        <activity android:name=".MainActivity"/>-->
         <activity
-            android:name=".video_player_intent"
+            android:name=".YouTubeVideo.VideoPlayer"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
-            android:supportsPictureInPicture="true" />
-        <activity android:name=".splash_screen">
+            android:supportsPictureInPicture="true"
+            tools:targetApi="n" />
+        <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan" />
-
-        <service android:name=".MediaPlayerService" />
+        <service android:name=".Util.PlayerService" />
     </application>
 
 </manifest>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".fragment_songs_list">
+    tools:context=".Screens.Fragments.SongsListFragment">
 
     <TextView
         android:id="@+id/textView7"

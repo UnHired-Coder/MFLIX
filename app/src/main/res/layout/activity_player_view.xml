@@ -5,7 +5,7 @@
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".player_view">
+    tools:context=".PlayerView">
 
 
     <android.support.constraint.ConstraintLayout

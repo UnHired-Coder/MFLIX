@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#031CFF"
-    tools:context=".toolsPage">
+    android:background="@color/colorPrimary"
+    tools:context=".Screens.MainScreens.ToolsPage">
 
     <!-- TODO: Update blank fragment layout -->
 
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="255dp"
+        android:layout_height="91dp"
+        android:layout_marginStart="87dp"
+        android:layout_marginTop="299dp"
+        android:layout_marginEnd="69dp"
+        android:layout_marginBottom="341dp"
+        android:text="Coming Soon.."
+        android:textColor="@color/colorPrimaryLight"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

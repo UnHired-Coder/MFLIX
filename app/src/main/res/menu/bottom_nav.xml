@@ -18,12 +18,12 @@
         android:title="Created" />
 
     <item android:id="@+id/nav_search"
-        android:title="Home"
+        android:title="Search"
         android:icon="@drawable/search_logo"
         />
 
     <item android:id="@+id/nav_tools"
-        android:title="Home"
+        android:title="Tools"
         android:icon="@drawable/tools_logo"
         />
 
