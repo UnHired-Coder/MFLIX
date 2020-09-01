@@ -77,8 +77,7 @@ public class AlbumFragment extends Fragment {
 
         Cursor songs_cursor = songs_database.rawQuery("SELECT _song_album,count(_song_album),_song_album_art_path FROM _songs_tb GROUP BY _song_album ", new String[]{});
         if (songs_cursor != null) {
-            songs_cursor.moveToFirst();
-
+            if(songs_cursor.moveToFirst())
             do {
                 SongModel song = new SongModel(0L,
                         "",

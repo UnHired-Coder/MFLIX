@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.youtube.player.internal.v;
 import com.google.gson.Gson;
 import com.telitel.tiwari.mflix.Database.DatabaseHelper;
 import com.telitel.tiwari.mflix.Database.StorageUtil;
@@ -38,6 +39,7 @@ public class HomePage extends Fragment {
     private ArrayList<SongModel> songsList;
     private ArrayList<SongModel> topPicsList;
     private ArrayList<SongModel> recentList;
+    boolean mediaAvailable;
 
     public HomePage() {
         // Required empty public constructor
@@ -48,6 +50,11 @@ public class HomePage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        if (!mediaAvailable) {
+            return inflater.inflate(R.layout.no_media_found, container, false);
+        }
+
         View v = inflater.inflate(R.layout.fragment_home_page, container, false);
 
         RecyclerView myTopRecyclerView = v.findViewById(R.id.top_recyclerView);
@@ -130,6 +137,7 @@ public class HomePage extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mediaAvailable = true;
         _songs_databaseHelper = DatabaseHelper.getInstance(getContext());
         songs_database = _songs_databaseHelper.getWritableDatabase();
 
@@ -140,33 +148,31 @@ public class HomePage extends Fragment {
 
         Cursor songs_cursor = songs_database.rawQuery("SELECT * FROM _songs_tb ", new String[]{});
         if (songs_cursor != null) {
-            songs_cursor.moveToFirst();
-
+            if(songs_cursor.moveToFirst())
             do {
                 SongModel song = new SongModel(songs_cursor.getLong(songs_cursor.getColumnIndex("_song_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_title")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_artist")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_genre")), songs_cursor.getString(songs_cursor.getColumnIndex("_is_favourite")), songs_cursor.getLong(songs_cursor.getColumnIndex("_song_album_id")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_album_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_art_path")), songs_cursor.getString(songs_cursor.getColumnIndex("_song_path")), "0");
                 songsList.add(song);
-
             } while (songs_cursor.moveToNext());
 
 
             int SONGS_COUNT = songsList.size();
+            if (SONGS_COUNT == 0)
+                mediaAvailable = false;
+
 
             if (SONGS_COUNT > 10) {
                 for (int i = 1; i <= 10; i++) {
                     recentList.add(songsList.get(SONGS_COUNT - i));
                     topPicsList.add(songsList.get(i));
-
                 }
             } else {
                 for (int i = 1; i <= SONGS_COUNT; i++) {
                     recentList.add(songsList.get(SONGS_COUNT - i));
-
                 }
-
             }
-
             Collections.shuffle(topPicsList);
             songs_cursor.close();
-        }
+        } else
+            mediaAvailable = false;
     }
 }

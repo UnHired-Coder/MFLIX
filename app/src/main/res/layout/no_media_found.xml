@@ -4,18 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    tools:context=".Screens.MainScreens.ToolsPage">
+    android:background="#00FFFFFF">
 
     <TextView
-        android:id="@+id/tv_comming_soon"
+        android:id="@+id/tv_no_media"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Comming soon.."
-        android:textColor="#FFFFFF"
+        android:text="No Playable Media Found"
+        android:textColor="@color/colorPrimaryLight"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

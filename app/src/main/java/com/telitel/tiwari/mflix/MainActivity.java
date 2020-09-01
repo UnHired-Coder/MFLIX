@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
     @Override
     protected void onStart() {
         super.onStart();
-        StorageUtil.registerPres(context, this);
+        StorageUtil.registerPres(getApplicationContext(), this);
         IntentFilter filter;
         filter = new IntentFilter(Broadcast_MEDIA_CHANGED);
         registerReceiver(mediaChangedReceiver, filter);
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
     @Override
     protected void onStop() {
         super.onStop();
-        StorageUtil.unRegisterPres(context, this);
+        StorageUtil.unRegisterPres(getApplicationContext(), this);
         unregisterReceiver(mediaChangedReceiver);
     }
 
