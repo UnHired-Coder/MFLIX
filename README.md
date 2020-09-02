@@ -16,18 +16,6 @@ Music Player Application
 |![threed_mockup (2)](https://user-images.githubusercontent.com/42827589/91978567-f5294080-ed41-11ea-8ceb-f9b3a28a32bd.png) | 
 | :-------------: | 
 
-|![threed_mockup (1)](https://user-images.githubusercontent.com/42827589/91978571-f65a6d80-ed41-11ea-9b97-ab1100f7ee91.png) | 
-| :-------------: | 
-|![threed_mockup](https://user-images.githubusercontent.com/42827589/91978573-f8243100-ed41-11ea-9855-9d2763d46ae0.png) | 
-| :-------------: | 
-
-
-
-
-
-
-
-
 
 
 
