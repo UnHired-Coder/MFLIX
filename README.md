@@ -4,20 +4,30 @@ Music Player Application
 ![Web 1920 – 1](https://user-images.githubusercontent.com/42827589/91978337-8ea42280-ed41-11ea-8a89-1c207ab22edd.png)
 
 ### Screens
-| ![threed_mockup (6)](https://user-images.githubusercontent.com/42827589/91978552-ee9ac900-ed41-11ea-83f7-75e3b19a8669.png) | 
+| ![threed_mockup (4)](https://user-images.githubusercontent.com/42827589/91978558-f22e5000-ed41-11ea-9350-59c0b33b6852.png) | 
 | :-------------: | 
 
 |![threed_mockup (5)](https://user-images.githubusercontent.com/42827589/91978554-f0fd2300-ed41-11ea-80d4-c650bfa878ca.png) | 
 | :-------------: | 
 
-|![threed_mockup (4)](https://user-images.githubusercontent.com/42827589/91978558-f22e5000-ed41-11ea-9350-59c0b33b6852.png) | 
+| ![threed_mockup (6)](https://user-images.githubusercontent.com/42827589/91978552-ee9ac900-ed41-11ea-83f7-75e3b19a8669.png) | 
 | :-------------: | 
 
 |![threed_mockup (2)](https://user-images.githubusercontent.com/42827589/91978567-f5294080-ed41-11ea-8ceb-f9b3a28a32bd.png) | 
 | :-------------: | 
 
+## FEATURES
+|Play Music,Videos | 
+| :-------------: | 
 
+| Filter Music :Album, Genre, Artist | 
+| :-------------: | 
 
+| Create PlayList, Favourite | 
+| :-------------: |
+
+| Background Play | 
+| :-------------: |
 
 ### LICENSE
 ```
