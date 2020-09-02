@@ -994,7 +994,6 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
                 menuDrawer.closeDrawer(Gravity.LEFT);
 
                 Toast.makeText(MainActivity.this, "Under development", Toast.LENGTH_LONG).show();
-                _collapseBottomSheet();
                 switch (menuItem.getItemId()) {
 
 //                    case R.id.equlizer:
@@ -1007,7 +1006,8 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
 //                        break;
 
                     case R.id.info:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new AboutFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new AboutFragment()).addToBackStack(null).commit();
+                        _collapseBottomSheet();
                         break;
 
                     case R.id.help:
