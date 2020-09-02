@@ -11,6 +11,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.MediaController;
 
 import com.telitel.tiwari.mflix.Database.StorageUtil;
 import com.telitel.tiwari.mflix.Models.SongModel;
@@ -159,18 +160,23 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             e.printStackTrace();
             stopMedia();
         }
-        mediaPlayer.prepareAsync();
+        try {
+            mediaPlayer.prepareAsync();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public void seekTo(int sec){
         mediaPlayer.seekTo(sec);
     }
 
-    public MediaPlayer getPlayerInstance(){
-        Log.i(TAG, "getPlayerInstance: "+ mediaPlayer);
-        if(mediaPlayer == null)
+    public MediaPlayer getPlayerInstance() {
+        Log.i(TAG, "getPlayerInstance: " + mediaPlayer);
+        if (mediaPlayer == null)
             mediaPlayer = new MediaPlayer();
         return mediaPlayer;
     }
+
 
     public void registerReceiver() {
         IntentFilter filter;
@@ -212,7 +218,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         Log.i(TAG, "onCompletion: " + mediaPlayer);
-
+        Intent broadcastIntent = new Intent(ACTION_NEXT);
+        if(getApplicationContext()!=null)
+            getApplicationContext().sendBroadcast(broadcastIntent);
     }
 
     @Override

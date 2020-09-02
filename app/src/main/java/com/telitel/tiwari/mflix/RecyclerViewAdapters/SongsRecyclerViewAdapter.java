@@ -54,9 +54,11 @@ public class SongsRecyclerViewAdapter extends RecyclerView.Adapter<SongsRecycler
             v = LayoutInflater.from(mContext).inflate(R.layout.song_item_large, viewGroup, false);
         else if (typeSong == 2)
             v = LayoutInflater.from(mContext).inflate(R.layout.favourite_song_item, viewGroup, false);
-        else if (typeSong == 4)
+        else if (typeSong == 4) {
             v = LayoutInflater.from(mContext).inflate(R.layout.play_list_item, viewGroup, false);
-        else
+         if (mData.size() == 0)
+                v = LayoutInflater.from(mContext).inflate(R.layout.create_new_playlist, viewGroup, false);
+        } else
             v = LayoutInflater.from(mContext).inflate(R.layout.plyer_song_art_view, viewGroup, false);
 
         return new mySongsViewHolder(v, mClickListener);

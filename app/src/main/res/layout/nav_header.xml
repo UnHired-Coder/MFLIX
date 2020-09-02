@@ -8,37 +8,28 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="121dp"
+        android:layout_width="0dp"
         android:layout_height="98dp"
-        android:layout_marginStart="47dp"
-        android:layout_marginLeft="47dp"
         android:layout_marginTop="54dp"
-        android:layout_marginEnd="46dp"
-        android:layout_marginRight="46dp"
         android:layout_marginBottom="28dp"
-        android:src="@drawable/sample_avatar"
+        android:src="@color/colorPrimaryDark"
         app:civ_border_color="#FF000000"
         app:civ_border_width="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="47dp" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="46dp"
-        android:layout_marginLeft="46dp"
         android:layout_marginTop="97dp"
-        android:layout_marginEnd="139dp"
-        android:layout_marginRight="139dp"
         android:layout_marginBottom="64dp"
-        android:text="TextView"
+        android:text="MFLIX"
         android:textColor="@android:color/background_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profile_image"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

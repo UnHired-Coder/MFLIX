@@ -71,7 +71,7 @@ public class SongsListRecyclerViewAdapter extends RecyclerView.Adapter<SongsList
             if (mData.get(i).getSongAlbumArtPath().equals("Un Known"))
                 mySongsViewHolder.iv_AlbumArt.setImageResource(R.drawable.sample_avatar);
             else {
-                mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongAlbumArtPath()));
+//                mySongsViewHolder.iv_AlbumArt.setImageURI(Uri.parse(mData.get(i).getSongAlbumArtPath()));
             }
         } else if (type == 1) {
             if (mData.get(i).getSongArtist().equals("Un Known"))

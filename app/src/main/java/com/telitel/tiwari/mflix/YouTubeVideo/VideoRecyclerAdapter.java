@@ -80,8 +80,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
 
     @Override
     public int getItemCount() {
-        if(mData==null)
-            return  0;
+        if (mData == null)
+            return 0;
         return mData.getItems().size();
     }
 
@@ -98,8 +98,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
 
             super(itemView);
 
-            tv_Name =  itemView.findViewById(R.id.video_title_list);
-            tv_Artist =  itemView.findViewById(R.id.channel_title_list);
+            tv_Name = itemView.findViewById(R.id.video_title_list);
+            tv_Artist = itemView.findViewById(R.id.channel_title_list);
             iv_AlbumArt = itemView.findViewById(R.id.video_thumbnail);
 
 
@@ -116,17 +116,6 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
                 }
             });
 //
-//            if(typeSong==2)
-//                itemView.findViewById(R.id.favourite_View).setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        Log.i("thgis",Integer.toString(getPosition()));
-//
-//
-//                    }
-//                });
-
-
         }
 
     }

@@ -17,18 +17,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#ADECEE">
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            android:padding="10dp">
 
             <ImageView
                 android:id="@+id/song_artView"
                 android:layout_width="41dp"
                 android:layout_height="38dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -37,16 +34,16 @@
 
             <TextView
                 android:id="@+id/song_name"
-                android:layout_width="164dp"
+                android:layout_width="wrap_content"
                 android:layout_height="25dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginBottom="5dp"
+                android:ellipsize="marquee"
                 android:gravity="center|left"
-                android:maxLines="1"
+                android:maxLength="30"
                 android:singleLine="true"
                 android:text="Give It to ME"
-                android:textColor="@color/textColorBlack"
+                android:textColor="@color/colorPrimaryLight"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/song_artView"
                 app:layout_constraintTop_toTopOf="parent" />

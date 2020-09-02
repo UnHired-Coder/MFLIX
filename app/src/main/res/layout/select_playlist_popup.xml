@@ -4,22 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimaryLight">
+    android:background="@drawable/layout_round_border">
 
 
     <ImageView
         android:id="@+id/createPlaylistButtonPopup"
-        android:layout_width="35dp"
-        android:layout_height="30dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_marginStart="17dp"
-        android:layout_marginLeft="17dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="44dp"
-        android:layout_marginRight="44dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_all_songs"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/playlist_button" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/selectPlaylistRecyclerView"
@@ -41,17 +39,25 @@
     <TextView
         android:id="@+id/tv_all_songs"
         android:layout_width="wrap_content"
-        android:layout_height="26dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="288dp"
-        android:layout_marginLeft="288dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="17dp"
-        android:layout_marginRight="17dp"
         android:text="New"
-        android:textColor="@color/textColorBlack"
+        android:textColor="@color/colorPrimaryLight"
         app:layout_constraintEnd_toStartOf="@+id/createPlaylistButtonPopup"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <include
+        android:id="@+id/create_new_playlist"
+        layout="@layout/create_new_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="530dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="44dp">
+
+    </include>
 
 </android.support.constraint.ConstraintLayout>

@@ -2,12 +2,18 @@ package com.telitel.tiwari.mflix.Screens.Fragments.UnImplemented;
 
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.media.audiofx.Equalizer;
+import android.media.audiofx.Visualizer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.Switch;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;

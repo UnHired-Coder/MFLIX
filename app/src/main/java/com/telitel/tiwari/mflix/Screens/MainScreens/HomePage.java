@@ -57,13 +57,15 @@ public class HomePage extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home_page, container, false);
         RecyclerView myTopRecyclerView = v.findViewById(R.id.top_recyclerView);
         SongsRecyclerViewAdapter topSongAdapter = new SongsRecyclerViewAdapter(getContext(), topPicsList, 0);
-        if (topPicsList.size() > 6) {
-            myTopRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-            myTopRecyclerView.setAdapter(topSongAdapter);
-        } else {
-            myTopRecyclerView.setVisibility(View.GONE);
-            v.findViewById(R.id.tv_top_pics).setVisibility(View.GONE);
-        }
+        myTopRecyclerView.setVisibility(View.GONE);
+        v.findViewById(R.id.tv_top_pics).setVisibility(View.GONE);
+//        if (topPicsList.size() > 6) {
+//            myTopRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+//            myTopRecyclerView.setAdapter(topSongAdapter);
+//        } else {
+//            myTopRecyclerView.setVisibility(View.GONE);
+//            v.findViewById(R.id.tv_top_pics).setVisibility(View.GONE);
+//        }
 
         RecyclerView myRecentRecyclerView = v.findViewById(R.id.recent_recyclerView);
         SongsRecyclerViewAdapter recentSongAdapter = new SongsRecyclerViewAdapter(getContext(), recentList, 0);
@@ -79,7 +81,7 @@ public class HomePage extends Fragment {
 
         RecyclerView mySongsRecyclerView = v.findViewById(R.id.songs_recyclerView);
         SongsRecyclerViewAdapter songAdapter = new SongsRecyclerViewAdapter(getContext(), songsList, 1);
-        mySongsRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        mySongsRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mySongsRecyclerView.setAdapter(songAdapter);
 
         topSongAdapter.setOnItemClickListener(new SongsRecyclerViewAdapter.OnItemClickListener() {

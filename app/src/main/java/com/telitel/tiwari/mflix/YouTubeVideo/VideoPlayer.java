@@ -15,7 +15,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.telitel.tiwari.mflix.MainActivity;
+
 import com.telitel.tiwari.mflix.R;
 
 public class VideoPlayer extends YouTubeBaseActivity {
@@ -33,7 +33,7 @@ public class VideoPlayer extends YouTubeBaseActivity {
         final String videoId = myIntent.getStringExtra("videoId");
         Button changeMode = findViewById(R.id.pipmode_button);
 
-        youTubeView = (YouTubePlayerView) findViewById(R.id.player_video_view);
+        youTubeView = findViewById(R.id.player_video_view);
         onInitializedListener = new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, final YouTubePlayer youTubePlayer, boolean b) {
@@ -120,11 +120,6 @@ public class VideoPlayer extends YouTubeBaseActivity {
 
 
         youTubeView.initialize(key, onInitializedListener);
-
-        //        videoView= findViewById(R.id.player_video_view);
-//        videoView.setVideoURI(Uri.parse("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
-//        videoView.start();
-
         changeMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,30 +166,10 @@ public class VideoPlayer extends YouTubeBaseActivity {
         } else {
             Toast.makeText(this, "API 26 needed to perform PiP", Toast.LENGTH_SHORT).show();
         }
-
     }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//
-//            Rational aspectRatio = new Rational(
-//                    youTubeView.getWidth(), youTubeView.getHeight());
-//            PictureInPictureParams params = null;
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                params = new PictureInPictureParams.Builder()
-//                        .setAspectRatio(aspectRatio)
-//                        .build();
-//            }
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                enterPictureInPictureMode(params);
-//            }
-//        }
-
 
     @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
-        if (isInPictureInPictureMode) {
-            // Hide the full-screen UI (controls, etc.) while in picture-in-picture changeMode.
-        } else {
-            // Restore the full-screen UI.
-        }
+
     }
 }
