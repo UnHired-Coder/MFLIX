@@ -1011,7 +1011,20 @@ public class MainActivity extends AppCompatActivity implements SideNaviToggle, S
                         break;
 
                     case R.id.help:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new HelpFragment()).commit();
+//                        Intent intent = new Intent(Intent.ACTION_SEND);
+//                        intent.setType("plain/text");
+//                        intent.setType("message/rfc822");
+//                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"pratyushfree@gmail.com"});
+//                        intent.putExtra(Intent.EXTRA_SUBJECT, "Help/Report");
+//                        intent.putExtra(Intent.EXTRA_TEXT, "");
+//                        startActivity(Intent.createChooser(intent, ""));
+                        final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                        }
+//                        getSupportFragmentManager().beginTransaction().replace(R.id.side_nav_fragment_container, new HelpFragment()).commit();
                         break;
                 }
                 return true;
