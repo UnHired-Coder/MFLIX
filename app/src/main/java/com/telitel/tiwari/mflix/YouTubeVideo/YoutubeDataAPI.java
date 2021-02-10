@@ -11,11 +11,11 @@ import retrofit2.http.Query;
 
 public class YoutubeDataAPI {
 
-    private static final String key = "AIzaSyCKAP7Y-RMjj3C4quc1pknoMjmYaw8lR5k";
+    private static final String key = "AIzaSyCKAP7Y-RMjj3C4quc1pknoMjmYaw";
     private static final String url = "https://www.googleapis.com/youtube/v3/";
 
 
-    public static VideoService videoService = null;
+    public static VideoService videoService = null;//8lR5k
 
     public static VideoService getVideoService() {
         if (videoService == null) {
